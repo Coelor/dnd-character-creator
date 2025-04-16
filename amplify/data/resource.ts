@@ -5,11 +5,34 @@ The section below creates a Todo database table with a "content" field. Try
 adding a new "isDone" field as a boolean. The authorization rule below
 specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
-=========================================================================*/
+
+EX:
 const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
+      isDone: a.boolean().default(false),
+    })
+    .authorization((allow) => [allow.owner()]),
+});
+=========================================================================*/
+
+const schema = a.schema({
+  Character: a
+    .model({
+      name: a.string(),
+      race: a.string(),
+      class: a.string(),
+      background: a.string(),
+      level: a.integer().default(1),
+      experiencePoints: a.integer().default(0),
+      
+      strength: a.integer().default(10),
+      dexterity: a.integer().default(10),
+      constitution: a.integer().default(10),
+      intelligence: a.integer().default(10),
+      wisdom: a.integer().default(10),
+      charisma: a.integer().default(10),
     })
     .authorization((allow) => [allow.owner()]),
 });
@@ -19,8 +42,7 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: "userPool",
-    // API Key is used for a.allow.public() rules
+    defaultAuthorizationMode: "userPool",// apiKey is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },
