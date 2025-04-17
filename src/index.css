@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 body {
   margin: 0;
   background: linear-gradient(180deg, rgb(117, 81, 194), rgb(255, 255, 255));
@@ -64,4 +65,8 @@ li:hover {
 a {
   font-weight: 800;
   text-decoration: none;
+}
+
+.input {
+  @apply block w-full px-3 py-2 border border-gray-300 rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
