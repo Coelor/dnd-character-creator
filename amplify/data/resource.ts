@@ -24,6 +24,7 @@ const schema = a.schema({
       race: a.string(),
       class: a.string(),
       background: a.string(),
+      alignment: a.string(),
       level: a.integer().default(1),
       experiencePoints: a.integer().default(0),
       
