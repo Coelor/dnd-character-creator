@@ -1,15 +1,32 @@
 @import "tailwindcss";
 
+/* ─── Your 4-color vars from the green palette ───────────────────── */
+:root {
+  --color-black:      #081C15;
+  --color-darkgrey:   #1B4332;
+  --color-primary:    #74C69D;
+  --color-primary-dark:#52B788;
+  --radius:           8px;
+}
 
+/* Page & typography */
 body {
   margin: 0;
-  background: linear-gradient(180deg, rgb(117, 81, 194), rgb(255, 255, 255));
-  display: flex;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   height: 100vh;
   width: 100vw;
+  display: flex;
   justify-content: center;
   align-items: center;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: var(--color-black);
+
+  /* gradient from mid-green → darker green → almost black */
+  background: linear-gradient(
+    180deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 60%,
+    var(--color-black) 100%
+  );
 }
 
 main {
@@ -18,55 +35,60 @@ main {
   align-items: stretch;
 }
 
+/* Buttons */
 button {
-  border-radius: 8px;
+  border-radius: var(--radius);
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+
+  background-color: var(--color-primary);
+  color: var(--color-black);
   cursor: pointer;
   transition: border-color 0.25s;
-  color: white;
 }
+
 button:hover {
-  border-color: #646cff;
+  border-color: var(--color-primary-dark);
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Lists */
 ul {
   padding-inline-start: 0;
-  margin-block-start: 0;
-  margin-block-end: 0;
-  list-style-type: none;
+  margin: 8px 0;
+  list-style: none;
+
   display: flex;
   flex-direction: column;
-  margin: 8px 0;
-  border: 1px solid black;
   gap: 1px;
-  background-color: black;
-  border-radius: 8px;
+
+  border: 1px solid var(--color-black);
+  border-radius: var(--radius);
+  background-color: var(--color-black);
   overflow: auto;
 }
 
 li {
-  background-color: white;
   padding: 8px;
+  background-color: var(--color-darkgrey);
+  color: var(--color-primary);
 }
 
 li:hover {
-  background: #dadbf9;
+  background-color: var(--color-primary);
+  color: var(--color-black);
 }
 
+/* Links */
 a {
   font-weight: 800;
   text-decoration: none;
-}
-
-.input {
-  @apply block w-full px-3 py-2 border border-gray-300 rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500;
+  color: var(--color-primary-dark);
 }
