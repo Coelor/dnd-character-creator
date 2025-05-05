@@ -1,97 +1,53 @@
-import { useState } from "react";
-import { Tab } from "@headlessui/react";
-import { Link, useNavigate } from "react-router-dom";
-import ClassTab from "./CreateCharacterPage/ClassTab";
-import RaceTab from "./CreateCharacterPage/RaceTab";
-import BackgroundTab from "./CreateCharacterPage/BackgroundTab";
-import AbilitiesTab from "./CreateCharacterPage/AbilitiesTab";
+import React, { useState } from "react";
+import Stepper from "../components/CharacterCreation/Stepper";
+// import BasicsStep from "../components/CharacterCreation/BasicsStep";
+// import RaceStep from "../components/CharacterCreation/RaceStep";
+// import ClassStep from "../components/CharacterCreation/ClassStep";
+// (Add others as needed)
 
-const tabs = ["Class", "Race", "Background", "Abilities"];
-function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(" ");
-}
+const steps = [
+  "Basics",
+  "Race",
+  "Class",
+  "Abilities",
+  "Background",
+  "Equipment",
+  "Review",
+];
 
-export default function CreateCharacterPage() {
-    const navigate = useNavigate();
-    const [form, setForm] = useState({
-        name: "",
-        class: "",
-        race: "",
-        background: "",
-        strength: 10,
-        dexterity: 10,
-        constitution: 10,
-        intelligence: 10,
-        wisdom: 10,
-        charisma: 10,
-    });
+const CreateCharacterPage: React.FC = () => {
+  const [step, setStep] = useState(0);
+  const [formData, setFormData] = useState({
+    name: "",
+    level: 1,
+    race: "",
+    class: "",
+    alignment: "",
+  });
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({
-            ...prev,
-            [name]: isNaN(Number(value)) ? value : parseInt(value),
-        }));
-    };
+  const goToNext = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
+  const goToPrev = () => setStep((prev) => Math.max(prev - 1, 0));
 
-    const handleSubmit = () => {
-        // TODO: submit to backend
-        console.log("submit", form);
-        navigate("/");
-    };
+  return (
+    <div className="px-4 sm:px-8 py-6 max-w-6xl mx-auto space-y-6">
+      <h1 className="text-2xl font-bold text-yellow-400">Create New Character</h1>
+      <Stepper steps={steps} currentStep={step} />
 
-    return (
-        <section className="max-w-4xl mx-auto mt-8 px-4 space-y-4">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Create New Character</h1>
-                <Link to="/" className="text-sm bg-gray-300 hover:bg-gray-400 px-3 py-1 rounded">
-                    Cancel
-                </Link>
-            </div>
+      {/* {step === 0 && <BasicsStep formData={formData} setFormData={setFormData} />}
+      {step === 1 && <RaceStep formData={formData} setFormData={setFormData} />}
+      {step === 2 && <ClassStep formData={formData} setFormData={setFormData} />} */}
+      {/* Add others */}
 
-            <Tab.Group>
-                <Tab.List className="flex space-x-2 border-b">
-                    {tabs.map((tab) => (
-                        <Tab
-                            key={tab}
-                            className={({ selected }) =>
-                                classNames(
-                                    "px-4 py-2 text-sm font-medium focus:outline-none",
-                                    selected
-                                        ? "border-b-2 border-blue-600 text-blue-600"
-                                        : "text-gray-600 hover:text-gray-800"
-                                )
-                            }
-                        >
-                            {tab}
-                        </Tab>
-                    ))}
-                </Tab.List>
+      <div className="flex justify-between pt-4">
+        <button onClick={goToPrev} className="px-4 py-2 rounded bg-gray-600 text-white">
+          Back
+        </button>
+        <button onClick={goToNext} className="px-4 py-2 rounded bg-purple-600 text-yellow-300">
+          Next
+        </button>
+      </div>
+    </div>
+  );
+};
 
-                <Tab.Panels className="mt-4 space-y-2">
-                    <Tab.Panel>
-                        <ClassTab value={form.class} onChange={handleChange} />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                        <RaceTab value={form.race} onChange={handleChange} />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                        <BackgroundTab value={form.background} onChange={handleChange} />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                        <AbilitiesTab stats={form} onChange={handleChange} />
-                    </Tab.Panel>
-                </Tab.Panels>
-            </Tab.Group>
-
-            <button
-                onClick={handleSubmit}
-                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-                Submit Character
-            </button>
-        </section>
-    );
-}
+export default CreateCharacterPage;
