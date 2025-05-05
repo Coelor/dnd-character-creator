@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Tab } from "@headlessui/react";
 import { Link, useNavigate } from "react-router-dom";
+import ClassTab from "./CreateCharacterPage/ClassTab";
+import RaceTab from "./CreateCharacterPage/RaceTab";
+import BackgroundTab from "./CreateCharacterPage/BackgroundTab";
+import AbilitiesTab from "./CreateCharacterPage/AbilitiesTab";
 
 const tabs = ["Class", "Race", "Background", "Abilities"];
-
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
@@ -23,22 +26,27 @@ export default function CreateCharacterPage() {
         charisma: 10,
     });
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
         const { name, value } = e.target;
         setForm((prev) => ({
             ...prev,
             [name]: isNaN(Number(value)) ? value : parseInt(value),
         }));
-    }
+    };
+
+    const handleSubmit = () => {
+        // TODO: submit to backend
+        console.log("submit", form);
+        navigate("/");
+    };
 
     return (
         <section className="max-w-4xl mx-auto mt-8 px-4 space-y-4">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold">Create New Character</h1>
-                <Link
-                    to="/"
-                    className="text-sm bg-gray-300 hover:bg-gray-400 px-3 py-1 rounded"
-                >
+                <Link to="/" className="text-sm bg-gray-300 hover:bg-gray-400 px-3 py-1 rounded">
                     Cancel
                 </Link>
             </div>
@@ -63,71 +71,25 @@ export default function CreateCharacterPage() {
                 </Tab.List>
 
                 <Tab.Panels className="mt-4 space-y-2">
-                    {/* CLASS */}
                     <Tab.Panel>
-                        <label className="block mb-1 text-sm">Class</label>
-                        <select
-                            name="class"
-                            value={form.class}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded"
-                        >
-                            <option value="">Select class</option>
-                            <option>Fighter</option>
-                            <option>Wizard</option>
-                            <option>Rogue</option>
-                            <option>Cleric</option>
-                        </select>
+                        <ClassTab value={form.class} onChange={handleChange} />
                     </Tab.Panel>
-
-                    {/* RACE */}
                     <Tab.Panel>
-                        <label className="block mb-1 text-sm">Race</label>
-                        <select
-                            name="race"
-                            value={form.race}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded"
-                        >
-                            <option value="">Select race</option>
-                            <option>Elf</option>
-                            <option>Dwarf</option>
-                            <option>Human</option>
-                            <option>Dragonborn</option>
-                        </select>
+                        <RaceTab value={form.race} onChange={handleChange} />
                     </Tab.Panel>
-
-                    {/* BACKGROUND */}
                     <Tab.Panel>
-                        <label className="block mb-1 text-sm">Background</label>
-                        <input
-                            name="background"
-                            value={form.background}
-                            onChange={handleChange}
-                            placeholder="Enter background"
-                            className="w-full p-2 border rounded"
-                        />
+                        <BackgroundTab value={form.background} onChange={handleChange} />
                     </Tab.Panel>
-
-                    {/* ABILITIES */}
                     <Tab.Panel>
-                        {["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].map((stat) => (
-                            <div key={stat}>
-                                <label className="block text-sm capitalize">{stat}</label>
-                                <input
-                                    type="number"
-                                    name={stat}
-                                    value={(form as any)[stat]}
-                                    onChange={handleChange}
-                                    className="w-full p-2 mb-2 border rounded"
-                                />
-                            </div>
-                        ))}
+                        <AbilitiesTab stats={form} onChange={handleChange} />
                     </Tab.Panel>
                 </Tab.Panels>
             </Tab.Group>
 
-            <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            <button
+                onClick={handleSubmit}
+                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
                 Submit Character
             </button>
         </section>
