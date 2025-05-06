@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Stepper from "../components/CharacterCreation/Stepper";
 import BasicsStep from "../components/CharacterCreation/BasicsStep";
 // import RaceStep from "../components/CharacterCreation/RaceStep";
-// import ClassStep from "../components/CharacterCreation/ClassStep";
+import ClassStep from "../components/CharacterCreation/ClassStep";
 // (Add others as needed)
 
 const steps = [
@@ -34,8 +34,8 @@ const CreateCharacterPage: React.FC = () => {
       <Stepper steps={steps} currentStep={step} />
 
       {step === 0 && <BasicsStep formData={formData} setFormData={setFormData} />}
-      {/* {step === 1 && <RaceStep formData={formData} setFormData={setFormData} />}
-      {step === 2 && <ClassStep formData={formData} setFormData={setFormData} />} */}
+      {/* {step === 1 && <RaceStep formData={formData} setFormData={setFormData} />} */}
+      {step === 2 && <ClassStep formData={formData} setFormData={setFormData} />}
       {/* Add others */}
 
       <div className="flex justify-between pt-4">
