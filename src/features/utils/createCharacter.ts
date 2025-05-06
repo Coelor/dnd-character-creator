@@ -1,14 +1,14 @@
 import { client } from "../../../amplify/data/client";
 import { getCurrentUser } from "aws-amplify/auth";
+import { CharacterInput } from "../../types/character";
 
-export const saveCharacter = async (characterData: any) => {
+export const saveCharacter = async (characterData: CharacterInput) => {
   try {
     const { username } = await getCurrentUser();
 
-    // Ensure required fields and assign ownership
     const result = await client.models.Character.create({
       ...characterData,
-      owner: username
+      owner: username,
     });
 
     return result.data;

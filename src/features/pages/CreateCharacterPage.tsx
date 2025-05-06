@@ -8,6 +8,7 @@ import BackgroundStep from "../components/CharacterCreation/BackgroundStep";
 import ReviewStep from "../components/CharacterCreation/ReviewStep";
 import SaveCharacterButton from "../components/SaveCharacterButton";
 import { useNavigate } from "react-router-dom";
+import { CharacterInput } from "../../types/character";
 
 const steps = [
   "Basics",
@@ -21,14 +22,46 @@ const steps = [
 
 const CreateCharacterPage: React.FC = () => {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CharacterInput>({
     name: "",
     level: 1,
     race: "",
+    subrace: "",
     class: "",
+    subclass: "",
     alignment: "",
-    // Additional form fields are set by other steps
+    background: "",
+    raceBonuses: {
+      STR: 0,
+      DEX: 0,
+      CON: 0,
+      INT: 0,
+      WIS: 0,
+      CHA: 0,
+    },
+    classAbilityBonuses: [],
+    baseAbilities: {
+      STR: 8,
+      DEX: 8,
+      CON: 8,
+      INT: 8,
+      WIS: 8,
+      CHA: 8,
+    },
+    extraLanguages: [],
+    selectedTraits: {
+      personality_traits: [],
+      ideals: [],
+      bonds: [],
+      flaws: []
+    },
+    proficiencies: [],
+    hp: "0/0",
+    ac: 10,
+    init: 0,
+    img: "",
   });
+  
 
   const navigate = useNavigate();
 

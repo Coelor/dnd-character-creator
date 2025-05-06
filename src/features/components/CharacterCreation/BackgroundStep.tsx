@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from "react";
 import LanguageSelector from "./BackgroundStep/LanguageSelector";
 import TraitSelector from "./BackgroundStep/TraitSelector";
+import { CharacterInput } from "../../../types/character";
 
 interface BackgroundStepProps {
-  formData: {
-    background: string;
-    extraLanguages?: string[];
-    selectedTraits?: {
-      personality_traits?: string[];
-      ideals?: string[];
-      bonds?: string[];
-      flaws?: string[];
-    };
-  };
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  formData: CharacterInput;
+  setFormData: React.Dispatch<React.SetStateAction<CharacterInput>>;
 }
 
 interface BackgroundSummary {
@@ -55,23 +47,30 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
   const [backgroundDetails, setBackgroundDetails] = useState<BackgroundDetails | null>(null);
   const [expandedFeature, setExpandedFeature] = useState(false);
 
-  // Local trait state, synced to formData
-  const selectedTraits = formData.selectedTraits || {
+  const selectedTraits = formData.selectedTraits ?? {
     personality_traits: [],
     ideals: [],
     bonds: [],
     flaws: [],
   };
 
-  const updateTraits = (key: keyof typeof selectedTraits, values: string[]) => {
+  const updateTraits = (
+    key: "personality_traits" | "ideals" | "bonds" | "flaws",
+    values: string[]
+  ) => {
     setFormData((prev) => ({
       ...prev,
       selectedTraits: {
-        ...prev.selectedTraits,
+        personality_traits: prev.selectedTraits?.personality_traits || [],
+        ideals: prev.selectedTraits?.ideals || [],
+        bonds: prev.selectedTraits?.bonds || [],
+        flaws: prev.selectedTraits?.flaws || [],
         [key]: values,
       },
     }));
   };
+  
+  
 
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/backgrounds")
@@ -98,7 +97,7 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
     fetch(`https://www.dnd5eapi.co/api/backgrounds/${formData.background}`)
       .then((res) => res.json())
       .then((data) => setBackgroundDetails(data));
-  }, [formData.background]);
+  }, [formData.background, setFormData]);
 
   return (
     <div className="space-y-6">
@@ -106,7 +105,7 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
       <div>
         <label className="block text-sm font-medium text-yellow-300 mb-1">Select Background</label>
         <select
-          value={formData.background}
+          value={formData.background ?? ""}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
@@ -132,7 +131,7 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
       </div>
 
       {/* Feature Accordion */}
-      {backgroundDetails?.feature?.desc?.length > 0 && (
+      {backgroundDetails?.feature?.desc && backgroundDetails.feature.desc.length > 0 && (
         <div className="border border-gray-600 rounded">
           <button
             onClick={() => setExpandedFeature(!expandedFeature)}
@@ -153,25 +152,25 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
       <TraitSelector
         title="Personality Traits"
         group={backgroundDetails?.personality_traits}
-        selected={selectedTraits.personality_traits || []}
+        selected={selectedTraits.personality_traits}
         setSelected={(val) => updateTraits("personality_traits", val)}
       />
       <TraitSelector
         title="Ideals"
         group={backgroundDetails?.ideals}
-        selected={selectedTraits.ideals || []}
+        selected={selectedTraits.ideals}
         setSelected={(val) => updateTraits("ideals", val)}
       />
       <TraitSelector
         title="Bonds"
         group={backgroundDetails?.bonds}
-        selected={selectedTraits.bonds || []}
+        selected={selectedTraits.bonds}
         setSelected={(val) => updateTraits("bonds", val)}
       />
       <TraitSelector
         title="Flaws"
         group={backgroundDetails?.flaws}
-        selected={selectedTraits.flaws || []}
+        selected={selectedTraits.flaws}
         setSelected={(val) => updateTraits("flaws", val)}
       />
 
