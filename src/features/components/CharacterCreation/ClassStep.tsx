@@ -36,7 +36,7 @@ const ClassStep: React.FC<ClassStepProps> = ({ formData, setFormData }) => {
     choose: number;
     options: { name: string; index: string }[];
   } | null>(null);
-  const [selectedProficiencies, setSelectedProficiencies] = useState<string[]>([]);
+  const [selectedProficiencies, setSelectedProficiencies] = useState<string[]>(formData.proficiencies || []);
   const [subclassLevel, setSubclassLevel] = useState<number | null>(null);
 
   useEffect(() => {

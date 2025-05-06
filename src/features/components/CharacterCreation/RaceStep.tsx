@@ -8,8 +8,7 @@ interface RaceStepProps {
   formData: {
     race: string;
     subrace?: string;
-    raceProficiencies?: string[];
-    raceAbilityBonuses?: AbilityBonus[];
+    raceBonuses?: Record<string, number>;
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -31,12 +30,6 @@ interface AbilityBonus {
 interface Trait {
   name: string;
   url: string;
-  index?: string;
-}
-
-interface Proficiency {
-  index: string;
-  name: string;
 }
 
 interface RaceDetails {
@@ -45,13 +38,11 @@ interface RaceDetails {
   desc?: string[];
   traits: Trait[];
   subraces: { index: string; name: string; url: string }[];
-  starting_proficiencies: Proficiency[];
 }
 
 interface SubraceDetails {
   ability_bonuses: AbilityBonus[];
   traits: Trait[];
-  starting_proficiencies?: Proficiency[];
 }
 
 const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
@@ -60,18 +51,16 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
   const [subraceDetails, setSubraceDetails] = useState<SubraceDetails | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch all races
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/2014/races")
       .then((res) => res.json())
       .then((data) => setRaceList(data.results));
   }, []);
 
-  // Fetch selected race
   useEffect(() => {
     if (!formData.race) {
       setRaceDetails(null);
-      setFormData((prev) => ({ ...prev, subrace: "" }));
+      setFormData((prev) => ({ ...prev, subrace: "", raceBonuses: {} }));
       return;
     }
 
@@ -81,13 +70,13 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
       .then((data) => {
         setRaceDetails(data);
         setLoading(false);
-        setFormData((prev) => ({ ...prev, subrace: "" }));
+        // Do not reset subrace here — allow it to persist across steps
       });
   }, [formData.race]);
 
-  // Fetch selected subrace
+  // ✅ Ensure subrace details are always updated if race/subrace are set
   useEffect(() => {
-    if (!formData.subrace) {
+    if (!formData.subrace || !formData.race) {
       setSubraceDetails(null);
       return;
     }
@@ -97,34 +86,24 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
       .then((data) => {
         setSubraceDetails(data);
       });
-  }, [formData.subrace]);
+  }, [formData.subrace, formData.race]);
 
-  // Merge and export bonuses + proficiencies
-  // Merge and export bonuses + proficiencies
-useEffect(() => {
-    const raceBonuses = raceDetails?.ability_bonuses || [];
-    const subraceBonuses = subraceDetails?.ability_bonuses || [];
-    const allBonuses = [...raceBonuses, ...subraceBonuses];
-  
-    const raceProfs = raceDetails?.starting_proficiencies || [];
-    const subraceProfs = subraceDetails?.starting_proficiencies || [];
-    const allProfs = [...raceProfs, ...subraceProfs];
-  
-    // Transform bonuses to a flat Record<Ability, number>
-    const bonusMap = allBonuses.reduce((acc, bonus) => {
-      const ability = bonus.ability_score.index.toUpperCase();
-      acc[ability] = (acc[ability] || 0) + bonus.bonus;
-      return acc;
-    }, {} as Record<string, number>);
-  
-    setFormData((prev) => ({
-      ...prev,
-      raceAbilityBonuses: allBonuses,
-      raceBonuses: bonusMap,
-      raceProficiencies: allProfs.map((p) => p.name),
-    }));
+  // ✅ Compute and export ability bonuses
+  useEffect(() => {
+    const bonuses: Record<string, number> = {};
+
+    const applyBonuses = (list: AbilityBonus[] = []) => {
+      list.forEach(({ ability_score, bonus }) => {
+        const ability = ability_score.index.toUpperCase();
+        bonuses[ability] = (bonuses[ability] || 0) + bonus;
+      });
+    };
+
+    applyBonuses(raceDetails?.ability_bonuses);
+    applyBonuses(subraceDetails?.ability_bonuses);
+
+    setFormData((prev) => ({ ...prev, raceBonuses: bonuses }));
   }, [raceDetails, subraceDetails]);
-  
 
   return (
     <div className="space-y-6">
