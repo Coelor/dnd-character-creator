@@ -1,5 +1,4 @@
 import React from "react";
-import { PALETTE } from "../DashboardLayout";
 
 interface BasicsStepProps {
   formData: {
