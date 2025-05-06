@@ -1,10 +1,7 @@
 import React from "react";
+import { CharacterStepProps } from "../../../../types/character";
 
-interface ClassSelectorProps {
-  formData: {
-    class: string;
-  };
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
+interface ClassSelectorProps extends CharacterStepProps {
   classList: string[];
   resetProficiencies: () => void;
 }
