@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { PALETTE } from "../DashboardLayout";
 import ClassSelector from "./ClassStep/ClassSelector";
 import LevelSelector from "./ClassStep/LevelSelector";
 import ProficiencyPicker from "./ClassStep/ProficiencyPicker";
 import LevelAccordion from "./ClassStep/LevelAccordion";
+import { CharacterInput } from "../../../types/character";
 
 interface ClassStepProps {
   formData: {
@@ -13,7 +13,7 @@ interface ClassStepProps {
     subclass?: string;
     classAbilityBonuses?: { level: number; description: string }[];
   };
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  setFormData: React.Dispatch<React.SetStateAction<CharacterInput>>;
 }
 
 interface Feature {
@@ -24,6 +24,13 @@ interface Feature {
 interface ClassLevel {
   level: number;
   features: Feature[];
+}
+
+interface ProficiencyOption {
+  item: {
+    name: string;
+    index: string;
+  };
 }
 
 const ClassStep: React.FC<ClassStepProps> = ({ formData, setFormData }) => {
@@ -42,7 +49,7 @@ const ClassStep: React.FC<ClassStepProps> = ({ formData, setFormData }) => {
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/classes")
       .then((res) => res.json())
-      .then((data) => setClassList(data.results.map((cls: any) => cls.name)));
+      .then((data) => setClassList(data.results.map((cls: { name: string }) => cls.name)));
   }, []);
 
   useEffect(() => {
@@ -90,7 +97,7 @@ const ClassStep: React.FC<ClassStepProps> = ({ formData, setFormData }) => {
           setProficiencyChoices({
             desc: choice.desc,
             choose: choice.choose,
-            options: choice.from.options.map((opt: any) => ({
+            options: choice.from.options.map((opt: ProficiencyOption) => ({
               name: opt.item.name,
               index: opt.item.index,
             })),
@@ -105,11 +112,11 @@ const ClassStep: React.FC<ClassStepProps> = ({ formData, setFormData }) => {
           setSubclassLevel(null);
         }
       });
-  }, [formData.class]);
+  }, [formData.class, setFormData]);
 
   useEffect(() => {
     setFormData((prev) => ({ ...prev, proficiencies: selectedProficiencies }));
-  }, [selectedProficiencies]);
+  }, [selectedProficiencies, setFormData]);
 
   const handleToggle = (lvl: number) => {
     setExpanded(expanded === lvl ? null : lvl);

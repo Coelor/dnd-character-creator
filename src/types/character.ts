@@ -3,18 +3,18 @@ export type Ability = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
 // Shared shape
 interface BaseCharacter {
     id?: string | null;
-    name?: string | null;
-    level?: number | null;
-    alignment?: string | null;
-    race?: string | null;
-    subrace?: string | null;
-    class?: string | null;
-    subclass?: string | null;
-    background?: string | null;
+    name?: string | "";
+    level?: number | 1;
+    alignment?: string | "";
+    race?: string | "";
+    subrace?: string | "";
+    class?: string | "";
+    subclass?: string | "";
+    background?: string | "";
 
-    raceBonuses?: Record<Ability, number> | null;
-    classAbilityBonuses?: { level: number; description: string }[] | null;
-    baseAbilities?: Record<Ability, number> | null;
+    raceBonuses?: Record<Ability, number> | Record<string, number>;
+    classAbilityBonuses?: { level: number; description: string }[];
+    baseAbilities?: Record<Ability, number> | Record<string, number>;
 
     extraLanguages?: string[] | null;
     selectedTraits?: {
