@@ -6,13 +6,17 @@ import { RawCharacter } from "../../types/character";
 
 const DashboardPage: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadCharacters = async () => {
+    const load = async () => {
+      setLoading(true);
       try {
         const data: RawCharacter[] = await fetchCharacters();
-  
-        const mapped: Character[] = data.map((char) => ({
+
+        // map the AppSync → UI shape
+        const uiChars: Character[] = data.map((char) => ({
           name: char.name ?? "Unknown",
           hp: char.hp ?? "0/0",
           ac: char.ac ?? 10,
@@ -20,23 +24,25 @@ const DashboardPage: React.FC = () => {
           level: char.level ?? 1,
           img: char.img ?? "/default-avatar.png",
         }));
-  
-        setCharacters(mapped);
-      } catch (error) {
-        console.error("Failed to fetch characters:", error);
+
+        setCharacters(uiChars);
+      } catch (e) {
+        console.error("Failed to fetch characters:", e);
+        setError("Could not load your characters.");
+      } finally {
+        setLoading(false);
       }
     };
-  
-    loadCharacters();
+
+    load();
   }, []);
-  
+
+  if (loading) return <p>Loading your characters…</p>;
+  if (error)   return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="space-y-12">
-      {/* <StatsSection stats={stats} /> */}
       <CharactersSection characters={characters} />
-      {/* <CampaignsSection campaigns={campaigns} /> */}
-      {/* <ActivitySection recent={recent} /> */}
     </div>
   );
 };

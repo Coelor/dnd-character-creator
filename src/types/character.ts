@@ -14,7 +14,7 @@ interface BaseCharacter {
 
     raceBonuses?: Record<Ability, number> | Record<string, number>;
     classAbilityBonuses?: { level: number; description: string }[];
-    baseAbilities?: Record<Ability, number> | Record<string, number>;
+    baseAbilities?: Record<string, number>;
 
     extraLanguages?: string[] | null;
     selectedTraits?: {

@@ -27,13 +27,21 @@ const schema = a.schema({
       alignment: a.string(),
       level: a.integer().default(1),
       experiencePoints: a.integer().default(0),
+
+      // Store complex objects as JSON
       
-      strength: a.integer().default(10),
-      dexterity: a.integer().default(10),
-      constitution: a.integer().default(10),
-      intelligence: a.integer().default(10),
-      wisdom: a.integer().default(10),
-      charisma: a.integer().default(10),
+      raceBonuses: a.json(),
+      classAbilityBonuses: a.json(),
+      extraLanguages: a.json(),
+      selectedTraits: a.json(),
+      proficiencies: a.json(),
+      baseAbilities: a.json(),
+      hp: a.string(),
+      ac: a.integer(),
+      init: a.integer(),
+      img: a.string(),
+      subrace: a.string(),
+      subclass: a.string(),
     })
     .authorization((allow) => [allow.owner()]),
 });

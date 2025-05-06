@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+// import { CognitoUser } from "../../types/auth";
+import { AuthUser } from "aws-amplify/auth";
 
 export const PALETTE = {
     gradientFrom: "var(--gradient-from)",
@@ -14,7 +16,7 @@ export const PALETTE = {
 };
 
 interface DashboardLayoutProps {
-    user: any;
+    user: AuthUser;
     signOut: () => void;
     children: React.ReactNode;
   }
@@ -37,17 +39,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {/* Top Section: Avatar & Nav Links */}
             <div>
                 <div className="flex items-center mb-6 space-x-3">
-                    <img
-                        src={user?.attributes?.picture || "/default-avatar.png"}
+                    {/* <img
+                        src={user?.signInDetails?.loginId || "/default-avatar.png"}
                         alt="avatar"
                         className="h-10 w-10 rounded-full border-2"
                         style={{ borderColor: PALETTE.textPrimary }}
-                    />
+                    /> */}
                     <span
-                        className="font-medium"
+                        className="font-medium text-sm"
                         style={{ color: PALETTE.textPrimary }}
                     >
-                        {user?.attributes?.email}
+                        {user?.signInDetails?.loginId}
                     </span>
                 </div>
 
