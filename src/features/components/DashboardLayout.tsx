@@ -14,10 +14,17 @@ export const PALETTE = {
 };
 
 interface DashboardLayoutProps {
-    user: any;
+    user: {
+      attributes?: {
+        email?: string;
+        picture?: string;
+        [key: string]: unknown;
+      };
+    };
     signOut: () => void;
     children: React.ReactNode;
-}
+  }
+  
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     user,
