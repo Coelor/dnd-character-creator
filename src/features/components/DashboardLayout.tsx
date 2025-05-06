@@ -14,13 +14,7 @@ export const PALETTE = {
 };
 
 interface DashboardLayoutProps {
-    user: {
-      attributes?: {
-        email?: string;
-        picture?: string;
-        [key: string]: unknown;
-      };
-    };
+    user: any;
     signOut: () => void;
     children: React.ReactNode;
   }
