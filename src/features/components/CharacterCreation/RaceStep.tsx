@@ -3,15 +3,7 @@ import RaceSelector from "./RaceStep/RaceSelector";
 import SubraceSelector from "./RaceStep/SubraceSelector";
 import AbilityBonuses from "./RaceStep/AbilityBonuses";
 import TraitAccordion from "./RaceStep/TraitAccordion";
-
-interface RaceStepProps {
-  formData: {
-    race: string;
-    subrace?: string;
-    raceBonuses?: Record<string, number>;
-  };
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
-}
+import { CharacterStepProps } from "../../../types/character";
 
 interface RaceSummary {
   index: string;
@@ -45,7 +37,7 @@ interface SubraceDetails {
   traits: Trait[];
 }
 
-const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
+const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
   const [raceList, setRaceList] = useState<RaceSummary[]>([]);
   const [raceDetails, setRaceDetails] = useState<RaceDetails | null>(null);
   const [subraceDetails, setSubraceDetails] = useState<SubraceDetails | null>(null);
@@ -70,11 +62,9 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
       .then((data) => {
         setRaceDetails(data);
         setLoading(false);
-        // Do not reset subrace here — allow it to persist across steps
       });
-  }, [formData.race]);
+  }, [formData.race, setFormData]);
 
-  // ✅ Ensure subrace details are always updated if race/subrace are set
   useEffect(() => {
     if (!formData.subrace || !formData.race) {
       setSubraceDetails(null);
@@ -88,7 +78,6 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
       });
   }, [formData.subrace, formData.race]);
 
-  // ✅ Compute and export ability bonuses
   useEffect(() => {
     const bonuses: Record<string, number> = {};
 
@@ -103,7 +92,7 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
     applyBonuses(subraceDetails?.ability_bonuses);
 
     setFormData((prev) => ({ ...prev, raceBonuses: bonuses }));
-  }, [raceDetails, subraceDetails]);
+  }, [raceDetails, subraceDetails, setFormData]);
 
   return (
     <div className="space-y-6">
@@ -113,7 +102,7 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
         raceList={raceList}
       />
 
-      {raceDetails?.subraces?.length > 0 && (
+      {Array.isArray(raceDetails?.subraces) && raceDetails.subraces.length > 0 && (
         <SubraceSelector
           subraces={raceDetails.subraces}
           value={formData.subrace || ""}
@@ -123,10 +112,10 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
 
       {loading && <div className="text-sm text-gray-400">Loading race details...</div>}
 
-      {/* Ability Bonuses */}
-      {(raceDetails?.ability_bonuses.length || subraceDetails?.ability_bonuses?.length) && (
+      {(Array.isArray(raceDetails?.ability_bonuses) && raceDetails.ability_bonuses.length > 0) ||
+      (Array.isArray(subraceDetails?.ability_bonuses) && subraceDetails.ability_bonuses.length > 0) ? (
         <div className="space-y-4">
-          {raceDetails?.ability_bonuses.length > 0 && (
+          {Array.isArray(raceDetails?.ability_bonuses) && raceDetails.ability_bonuses.length > 0 && (
             <div>
               <h3 className="text-yellow-300 font-semibold border-b border-gray-700 pb-1">
                 Race Ability Bonuses
@@ -135,7 +124,7 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
             </div>
           )}
 
-          {subraceDetails?.ability_bonuses?.length > 0 && (
+          {Array.isArray(subraceDetails?.ability_bonuses) && subraceDetails.ability_bonuses.length > 0 && (
             <div>
               <h3 className="text-purple-300 font-semibold border-b border-gray-700 pb-1">
                 Subrace Ability Bonuses
@@ -144,22 +133,19 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
             </div>
           )}
         </div>
-      )}
+      ) : null}
 
-      {/* Description */}
-      {raceDetails?.desc?.length > 0 && (
+      {Array.isArray(raceDetails?.desc) && raceDetails.desc.length > 0 && (
         <div>
           <h3 className="text-yellow-300 font-semibold">Description</h3>
-          <p className="text-gray-300 whitespace-pre-line">
-            {raceDetails.desc.join("\n\n")}
-          </p>
+          <p className="text-gray-300 whitespace-pre-line">{raceDetails.desc.join("\n\n")}</p>
         </div>
       )}
 
-      {/* Traits */}
-      {(raceDetails?.traits.length || subraceDetails?.traits?.length) && (
+      {(Array.isArray(raceDetails?.traits) && raceDetails.traits.length > 0) ||
+      (Array.isArray(subraceDetails?.traits) && subraceDetails.traits.length > 0) ? (
         <div className="space-y-4">
-          {raceDetails?.traits.length > 0 && (
+          {Array.isArray(raceDetails?.traits) && raceDetails.traits.length > 0 && (
             <div>
               <h3 className="text-yellow-300 font-semibold border-b border-gray-700 pb-1">
                 Race Traits
@@ -168,7 +154,7 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
             </div>
           )}
 
-          {subraceDetails?.traits?.length > 0 && (
+          {Array.isArray(subraceDetails?.traits) && subraceDetails.traits.length > 0 && (
             <div>
               <h3 className="text-purple-300 font-semibold border-b border-gray-700 pb-1">
                 Subrace Traits
@@ -177,7 +163,7 @@ const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
             </div>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
