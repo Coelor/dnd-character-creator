@@ -32,7 +32,11 @@ interface ReviewStepProps {
 }
 
 const ReviewStep: React.FC<ReviewStepProps> = ({ formData }) => {
-    const { baseAbilities = {}, raceBonuses = {}, classAbilityBonuses = [] } = formData;
+    const {
+        baseAbilities = {} as Record<Ability, number>,
+        raceBonuses = {} as Record<Ability, number>,
+    } = formData;
+
     const abilities: Ability[] = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
 
     const getTotal = (ability: Ability) => {

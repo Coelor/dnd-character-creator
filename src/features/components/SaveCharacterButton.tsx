@@ -11,19 +11,29 @@ interface SaveCharacterButtonProps {
 const SaveCharacterButton: React.FC<SaveCharacterButtonProps> = ({ formData, editing = false, onSaved }) => {
     const handleSave = async () => {
         try {
-            if (editing && formData.id) {
-                await client.models.Character.update({ id: formData.id!, ...formData });
-                alert("Character updated successfully!");
-            } else {
-                await client.models.Character.create(formData);
-                alert("Character saved successfully!");
-            }
-            onSaved?.();
+          if (editing && formData.id) {
+            const { id, ...rest } = formData;
+      
+            await client.models.Character.update({
+              id, // now guaranteed to be string
+              ...rest,
+            });
+      
+            alert("Character updated successfully!");
+          } else {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { id: _, ...characterWithoutId } = formData;
+            await client.models.Character.create(characterWithoutId);
+
+            alert("Character saved successfully!");
+          }
+          onSaved?.();
         } catch (err) {
-            console.error("Error saving character:", err);
-            alert("Something went wrong.");
+          console.error("Error saving character:", err);
+          alert("Something went wrong.");
         }
-    };
+      };
+      
 
     return (
         <button

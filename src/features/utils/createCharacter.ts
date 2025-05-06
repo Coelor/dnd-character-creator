@@ -6,8 +6,11 @@ export const saveCharacter = async (characterData: CharacterInput) => {
   try {
     const { username } = await getCurrentUser();
 
+    // Remove 'id' if it's null to avoid type error
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...rest } = characterData;
     const result = await client.models.Character.create({
-      ...characterData,
+      ...rest,
       owner: username,
     });
 
@@ -17,3 +20,4 @@ export const saveCharacter = async (characterData: CharacterInput) => {
     throw error;
   }
 };
+

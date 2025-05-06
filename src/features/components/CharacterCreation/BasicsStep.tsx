@@ -4,6 +4,7 @@ interface BasicsStepProps {
   formData: {
     name: string;
     alignment: string;
+    [key: string]: unknown;
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
