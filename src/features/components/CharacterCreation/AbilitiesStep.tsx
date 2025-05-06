@@ -14,13 +14,18 @@ interface AbilitiesStepProps {
 const standardArray: number[] = [15, 14, 13, 12, 10, 8];
 
 const AbilitiesStep: React.FC<AbilitiesStepProps> = ({ formData, setFormData }) => {
-  const [mode, setMode] = useState<"manual" | "array" | "random">("manual");
-  const [baseAbilities, setBaseAbilities] = useState<Record<Ability, number>>({
+  const defaultAbilities: Record<Ability, number> = {
     STR: 8, DEX: 8, CON: 8, INT: 8, WIS: 8, CHA: 8,
-  });
+  };
+
+  const [mode, setMode] = useState<"manual" | "array-random" | "array-manual">("manual");
+  const [baseAbilities, setBaseAbilities] = useState<Record<Ability, number>>(
+    formData.baseAbilities || defaultAbilities
+  );
 
   const abilities: Ability[] = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
 
+  // Save changes to parent
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
@@ -40,18 +45,8 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({ formData, setFormData }) 
     setBaseAbilities(rolled);
   };
 
-  const handleStandardArray = () => {
-    const sorted = [...standardArray];
-    const mapped = {} as Record<Ability, number>;
-    abilities.forEach((ability, i) => {
-      mapped[ability] = sorted[i] ?? 8;
-    });
-    setBaseAbilities(mapped);
-  };
-
   const raceBonuses = formData.raceBonuses || {};
 
-  // Parse ability names from class bonus descriptions
   const classBonuses: Record<Ability, number> = (() => {
     const bonusMap: Record<Ability, number> = { STR: 0, DEX: 0, CON: 0, INT: 0, WIS: 0, CHA: 0 };
     const keywords: Record<string, Ability> = {
@@ -74,26 +69,61 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({ formData, setFormData }) 
     return bonusMap;
   })();
 
+  const usedArrayValues = new Set(Object.values(baseAbilities));
+  const availableStandardArray = standardArray.filter((val) =>
+    Object.values(baseAbilities).includes(val)
+  );
+
   return (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-semibold text-yellow-300 mb-2">Ability Input Method</label>
-        <div className="flex gap-3">
-          {["manual", "array", "random"].map((opt) => (
-            <button
-              key={opt}
-              onClick={() => {
-                setMode(opt as any);
-                if (opt === "array") handleStandardArray();
-                if (opt === "random") handleRandomize();
-              }}
-              className={`px-4 py-1 rounded text-sm font-medium border ${
-                mode === opt ? "bg-yellow-300 text-black" : "bg-gray-700 text-white border-gray-500"
-              }`}
-            >
-              {opt === "manual" ? "Manual" : opt === "array" ? "Standard Array" : "Random"}
-            </button>
-          ))}
+        <label className="block text-sm font-semibold text-yellow-300 mb-2">
+          Ability Input Method
+        </label>
+        <div className="flex gap-3 flex-wrap">
+          <button
+            onClick={() => {
+              setMode("manual");
+              setBaseAbilities(formData.baseAbilities || defaultAbilities);
+            }}
+            className={`px-4 py-1 rounded text-sm font-medium border ${
+              mode === "manual"
+                ? "bg-yellow-300 text-black"
+                : "bg-gray-700 text-white border-gray-500"
+            }`}
+          >
+            Manual
+          </button>
+          <button
+            onClick={() => {
+              setMode("array-manual");
+              const mapped = {} as Record<Ability, number>;
+              abilities.forEach((ability, i) => {
+                mapped[ability] = standardArray[i] ?? 8;
+              });
+              setBaseAbilities(mapped);
+            }}
+            className={`px-4 py-1 rounded text-sm font-medium border ${
+              mode === "array-manual"
+                ? "bg-yellow-300 text-black"
+                : "bg-gray-700 text-white border-gray-500"
+            }`}
+          >
+            Standard Array (Manual Assign)
+          </button>
+          <button
+            onClick={() => {
+              setMode("array-random");
+              handleRandomize();
+            }}
+            className={`px-4 py-1 rounded text-sm font-medium border ${
+              mode === "array-random"
+                ? "bg-yellow-300 text-black"
+                : "bg-gray-700 text-white border-gray-500"
+            }`}
+          >
+            Random
+          </button>
         </div>
       </div>
 
@@ -132,6 +162,31 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({ formData, setFormData }) 
                       }
                       className="w-16 px-2 py-1 rounded bg-gray-700 border border-gray-500 text-center"
                     />
+                  ) : mode === "array-manual" ? (
+                    <select
+                      value={base}
+                      onChange={(e) =>
+                        setBaseAbilities((prev) => ({
+                          ...prev,
+                          [ability]: parseInt(e.target.value),
+                        }))
+                      }
+                      className="w-20 px-2 py-1 rounded bg-gray-700 border border-gray-500 text-center"
+                    >
+                      <option value="">--</option>
+                      {standardArray.map((val) => {
+                        const isUsed =
+                          Object.entries(baseAbilities).some(
+                            ([key, assigned]) =>
+                              key !== ability && assigned === val
+                          );
+                        return (
+                          <option key={val} value={val} disabled={isUsed}>
+                            {val}
+                          </option>
+                        );
+                      })}
+                    </select>
                   ) : (
                     base
                   )}

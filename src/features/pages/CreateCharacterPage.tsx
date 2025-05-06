@@ -5,8 +5,9 @@ import RaceStep from "../components/CharacterCreation/RaceStep";
 import ClassStep from "../components/CharacterCreation/ClassStep";
 import AbilitiesStep from "../components/CharacterCreation/AbilitiesStep";
 import BackgroundStep from "../components/CharacterCreation/BackgroundStep";
-// import EquipmentStep from "../components/CharacterCreation/EquipmentStep";
 import ReviewStep from "../components/CharacterCreation/ReviewStep";
+import SaveCharacterButton from "../components/SaveCharacterButton";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   "Basics",
@@ -26,7 +27,10 @@ const CreateCharacterPage: React.FC = () => {
     race: "",
     class: "",
     alignment: "",
+    // Additional form fields are set by other steps
   });
+
+  const navigate = useNavigate();
 
   const goToNext = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const goToPrev = () => setStep((prev) => Math.max(prev - 1, 0));
@@ -43,15 +47,29 @@ const CreateCharacterPage: React.FC = () => {
       {step === 4 && <BackgroundStep formData={formData} setFormData={setFormData} />}
       {/* {step === 5 && <EquipmentStep formData={formData} setFormData={setFormData} />} */}
       {step === 6 && <ReviewStep formData={formData} setFormData={setFormData} />}
-      {/* Add others */}
 
       <div className="flex justify-between pt-4">
-        <button onClick={goToPrev} className="px-4 py-2 rounded bg-gray-600 text-white">
+        <button
+          onClick={goToPrev}
+          className="px-4 py-2 rounded bg-gray-600 text-white"
+          disabled={step === 0}
+        >
           Back
         </button>
-        <button onClick={goToNext} className="px-4 py-2 rounded bg-purple-600 text-yellow-300">
-          Next
-        </button>
+
+        {step === steps.length - 1 ? (
+          <SaveCharacterButton
+            formData={formData}
+            onSaved={() => navigate("/")}
+          />
+        ) : (
+          <button
+            onClick={goToNext}
+            className="px-4 py-2 rounded bg-purple-600 text-yellow-300"
+          >
+            Next
+          </button>
+        )}
       </div>
     </div>
   );
