@@ -15,30 +15,29 @@ export const fetchCharacters = async (): Promise<RawCharacter[]> => {
     const c = char as Partial<RawCharacter>;
 
     return {
-      name: c.name ?? undefined,
-      race: c.race ?? undefined,
-      class: c.class ?? undefined,
-      background: c.background ?? undefined,
-      alignment: c.alignment ?? undefined,
-      level: c.level ?? undefined,
-      hp: c.hp ?? undefined,
-      ac: c.ac ?? undefined,
-      init: c.init ?? undefined,
-      img: c.img ?? undefined,
-      owner: c.owner ?? undefined,
+      name: c.name ?? "Unknown",
+      race: c.race ?? "Unknown",
+      class: c.class ?? "Unknown",
+      background: c.background ?? "None",
+      alignment: c.alignment ?? "Neutral",
+      level: c.level ?? 1,
+      hp: c.hp ?? "0/0",
+      ac: c.ac ?? 10,
+      init: c.init ?? 0,
+      img: c.img ?? "/default-avatar.png",
+      owner: c.owner ?? "unknown",
       updatedAt: c.updatedAt ?? new Date().toISOString(),
       proficiencies: c.proficiencies ?? [],
       baseAbilities: c.baseAbilities ?? {},
       raceBonuses: c.raceBonuses ?? {},
       classAbilityBonuses: c.classAbilityBonuses ?? [],
-      selectedTraits:
-        c.selectedTraits ??
-        {
-          personality_traits: [],
-          ideals: [],
-          bonds: [],
-          flaws: [],
-        },
+      selectedTraits: c.selectedTraits ?? {
+        personality_traits: [],
+        ideals: [],
+        bonds: [],
+        flaws: [],
+      },
     };
+    
   });
 };
