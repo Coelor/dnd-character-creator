@@ -4,6 +4,9 @@ import BasicsStep from "../components/CharacterCreation/BasicsStep";
 import RaceStep from "../components/CharacterCreation/RaceStep";
 import ClassStep from "../components/CharacterCreation/ClassStep";
 import AbilitiesStep from "../components/CharacterCreation/AbilitiesStep";
+import BackgroundStep from "../components/CharacterCreation/BackgroundStep";
+// import EquipmentStep from "../components/CharacterCreation/EquipmentStep";
+import ReviewStep from "../components/CharacterCreation/ReviewStep";
 
 const steps = [
   "Basics",
@@ -31,15 +34,15 @@ const CreateCharacterPage: React.FC = () => {
   return (
     <div className="px-4 sm:px-8 py-6 max-w-6xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold text-yellow-400">Create New Character</h1>
-      <Stepper steps={steps} currentStep={step} />
+      <Stepper steps={steps} currentStep={step} onStepClick={(index) => setStep(index)} />
 
       {step === 0 && <BasicsStep formData={formData} setFormData={setFormData} />}
       {step === 1 && <RaceStep formData={formData} setFormData={setFormData} />}
       {step === 2 && <ClassStep formData={formData} setFormData={setFormData} />}
       {step === 3 && <AbilitiesStep formData={formData} setFormData={setFormData} />}
-      {/* {step === 4 && <BackgroundStep formData={formData} setFormData={setFormData} />}
-      {step === 5 && <EquipmentStep formData={formData} setFormData={setFormData} />}
-      {step === 6 && <ReviewStep formData={formData} setFormData={setFormData} />} */}
+      {step === 4 && <BackgroundStep formData={formData} setFormData={setFormData} />}
+      {/* {step === 5 && <EquipmentStep formData={formData} setFormData={setFormData} />} */}
+      {step === 6 && <ReviewStep formData={formData} setFormData={setFormData} />}
       {/* Add others */}
 
       <div className="flex justify-between pt-4">
