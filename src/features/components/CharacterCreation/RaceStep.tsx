@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
+import RaceSelector from "./RaceStep/RaceSelector";
+import SubraceSelector from "./RaceStep/SubraceSelector";
+import AbilityBonuses from "./RaceStep/AbilityBonuses";
+import TraitAccordion from "./RaceStep/TraitAccordion";
 
 interface RaceStepProps {
   formData: {
     race: string;
+    subrace?: string;
+    raceProficiencies?: string[];
+    raceAbilityBonuses?: AbilityBonus[];
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -24,11 +31,12 @@ interface AbilityBonus {
 interface Trait {
   name: string;
   url: string;
+  index?: string;
 }
 
-interface TraitDetails {
+interface Proficiency {
+  index: string;
   name: string;
-  desc: string[];
 }
 
 interface RaceDetails {
@@ -36,125 +44,159 @@ interface RaceDetails {
   ability_bonuses: AbilityBonus[];
   desc?: string[];
   traits: Trait[];
+  subraces: { index: string; name: string; url: string }[];
+  starting_proficiencies: Proficiency[];
+}
+
+interface SubraceDetails {
+  ability_bonuses: AbilityBonus[];
+  traits: Trait[];
+  starting_proficiencies?: Proficiency[];
 }
 
 const RaceStep: React.FC<RaceStepProps> = ({ formData, setFormData }) => {
   const [raceList, setRaceList] = useState<RaceSummary[]>([]);
   const [raceDetails, setRaceDetails] = useState<RaceDetails | null>(null);
-  const [expandedTrait, setExpandedTrait] = useState<string | null>(null);
-  const [traitDescriptions, setTraitDescriptions] = useState<Record<string, string>>({});
+  const [subraceDetails, setSubraceDetails] = useState<SubraceDetails | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch race list on mount
+  // Fetch all races
   useEffect(() => {
     fetch("https://www.dnd5eapi.co/api/2014/races")
       .then((res) => res.json())
       .then((data) => setRaceList(data.results));
   }, []);
 
-  // Fetch selected race details
+  // Fetch selected race
   useEffect(() => {
     if (!formData.race) {
       setRaceDetails(null);
+      setFormData((prev) => ({ ...prev, subrace: "" }));
       return;
     }
 
     setLoading(true);
-    fetch(`https://www.dnd5eapi.co/api/2014/races/${formData.race.toLowerCase()}`)
+    fetch(`https://www.dnd5eapi.co/api/2014/races/${formData.race}`)
       .then((res) => res.json())
       .then((data) => {
         setRaceDetails(data);
         setLoading(false);
-        setTraitDescriptions({}); // Reset on race change
-        setExpandedTrait(null);
+        setFormData((prev) => ({ ...prev, subrace: "" }));
       });
   }, [formData.race]);
 
-  // Fetch trait details when expanded
-  const handleToggleTrait = async (trait: Trait) => {
-    const isOpen = expandedTrait === trait.index;
-    if (isOpen) {
-      setExpandedTrait(null);
-    } else {
-      setExpandedTrait(trait.index);
-
-      // If not already fetched, fetch now
-      if (!traitDescriptions[trait.index]) {
-        const res = await fetch(`https://www.dnd5eapi.co${trait.url}`);
-        const data: TraitDetails = await res.json();
-        setTraitDescriptions((prev) => ({
-          ...prev,
-          [trait.index]: data.desc?.join("\n\n") || "No description available.",
-        }));
-      }
+  // Fetch selected subrace
+  useEffect(() => {
+    if (!formData.subrace) {
+      setSubraceDetails(null);
+      return;
     }
-  };
+
+    fetch(`https://www.dnd5eapi.co/api/2014/subraces/${formData.subrace}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setSubraceDetails(data);
+      });
+  }, [formData.subrace]);
+
+  // Merge and export bonuses + proficiencies
+  // Merge and export bonuses + proficiencies
+useEffect(() => {
+    const raceBonuses = raceDetails?.ability_bonuses || [];
+    const subraceBonuses = subraceDetails?.ability_bonuses || [];
+    const allBonuses = [...raceBonuses, ...subraceBonuses];
+  
+    const raceProfs = raceDetails?.starting_proficiencies || [];
+    const subraceProfs = subraceDetails?.starting_proficiencies || [];
+    const allProfs = [...raceProfs, ...subraceProfs];
+  
+    // Transform bonuses to a flat Record<Ability, number>
+    const bonusMap = allBonuses.reduce((acc, bonus) => {
+      const ability = bonus.ability_score.index.toUpperCase();
+      acc[ability] = (acc[ability] || 0) + bonus.bonus;
+      return acc;
+    }, {} as Record<string, number>);
+  
+    setFormData((prev) => ({
+      ...prev,
+      raceAbilityBonuses: allBonuses,
+      raceBonuses: bonusMap,
+      raceProficiencies: allProfs.map((p) => p.name),
+    }));
+  }, [raceDetails, subraceDetails]);
+  
 
   return (
     <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-yellow-300 mb-1">Select Race</label>
-        <select
-          value={formData.race}
-          onChange={(e) => setFormData((prev) => ({ ...prev, race: e.target.value }))}
-          className="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600"
-        >
-          <option value="">-- Choose Race --</option>
-          {raceList.map((race) => (
-            <option key={race.index} value={race.index}>
-              {race.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <RaceSelector
+        value={formData.race}
+        onChange={(val) => setFormData((prev) => ({ ...prev, race: val }))}
+        raceList={raceList}
+      />
 
-      {loading && <div className="text-gray-400 text-sm">Loading race details...</div>}
+      {raceDetails?.subraces?.length > 0 && (
+        <SubraceSelector
+          subraces={raceDetails.subraces}
+          value={formData.subrace || ""}
+          onChange={(val) => setFormData((prev) => ({ ...prev, subrace: val }))}
+        />
+      )}
 
-      {raceDetails && (
-        <div className="space-y-4 text-sm text-white">
-          <div>
-            <h3 className="text-yellow-300 font-semibold">Ability Bonuses</h3>
-            <ul className="list-disc list-inside text-gray-300">
-              {raceDetails.ability_bonuses.map((bonus, idx) => (
-                <li key={idx}>
-                  {bonus.ability_score.name}: +{bonus.bonus}
-                </li>
-              ))}
-            </ul>
-          </div>
+      {loading && <div className="text-sm text-gray-400">Loading race details...</div>}
 
-          {/* Description (if exists) */}
-          {raceDetails.desc?.length > 0 && (
+      {/* Ability Bonuses */}
+      {(raceDetails?.ability_bonuses.length || subraceDetails?.ability_bonuses?.length) && (
+        <div className="space-y-4">
+          {raceDetails?.ability_bonuses.length > 0 && (
             <div>
-              <h3 className="text-yellow-300 font-semibold">Description</h3>
-              <p className="text-gray-300 whitespace-pre-line">
-                {raceDetails.desc.join("\n\n")}
-              </p>
+              <h3 className="text-yellow-300 font-semibold border-b border-gray-700 pb-1">
+                Race Ability Bonuses
+              </h3>
+              <AbilityBonuses bonuses={raceDetails.ability_bonuses} />
             </div>
           )}
 
-          {/* Trait Accordions */}
-          <div>
-            <h3 className="text-yellow-300 font-semibold">Traits</h3>
-            <div className="space-y-2">
-              {raceDetails.traits.map((trait) => (
-                <div key={trait.index} className="border border-gray-600 rounded">
-                  <button
-                    onClick={() => handleToggleTrait(trait)}
-                    className="w-full text-left px-4 py-2 font-semibold text-yellow-300 flex justify-between items-center"
-                  >
-                    <span>{trait.name}</span>
-                    <span>{expandedTrait === trait.index ? "▾" : "▸"}</span>
-                  </button>
-                  {expandedTrait === trait.index && (
-                    <div className="px-4 py-2 text-gray-300 whitespace-pre-line">
-                      {traitDescriptions[trait.index] || "Loading..."}
-                    </div>
-                  )}
-                </div>
-              ))}
+          {subraceDetails?.ability_bonuses?.length > 0 && (
+            <div>
+              <h3 className="text-purple-300 font-semibold border-b border-gray-700 pb-1">
+                Subrace Ability Bonuses
+              </h3>
+              <AbilityBonuses bonuses={subraceDetails.ability_bonuses} />
             </div>
-          </div>
+          )}
+        </div>
+      )}
+
+      {/* Description */}
+      {raceDetails?.desc?.length > 0 && (
+        <div>
+          <h3 className="text-yellow-300 font-semibold">Description</h3>
+          <p className="text-gray-300 whitespace-pre-line">
+            {raceDetails.desc.join("\n\n")}
+          </p>
+        </div>
+      )}
+
+      {/* Traits */}
+      {(raceDetails?.traits.length || subraceDetails?.traits?.length) && (
+        <div className="space-y-4">
+          {raceDetails?.traits.length > 0 && (
+            <div>
+              <h3 className="text-yellow-300 font-semibold border-b border-gray-700 pb-1">
+                Race Traits
+              </h3>
+              <TraitAccordion traits={raceDetails.traits} />
+            </div>
+          )}
+
+          {subraceDetails?.traits?.length > 0 && (
+            <div>
+              <h3 className="text-purple-300 font-semibold border-b border-gray-700 pb-1">
+                Subrace Traits
+              </h3>
+              <TraitAccordion traits={subraceDetails.traits} />
+            </div>
+          )}
         </div>
       )}
     </div>

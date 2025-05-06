@@ -11,6 +11,7 @@ interface ClassStepProps {
     level: number;
     proficiencies?: string[];
     subclass?: string;
+    classAbilityBonuses?: { level: number; description: string }[];
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -58,21 +59,30 @@ const ClassStep: React.FC<ClassStepProps> = ({ formData, setFormData }) => {
       .then(async (levels) => {
         setLevelData(levels);
         const detailsMap: Record<number, Record<string, string>> = {};
+        const bonusList: { level: number; description: string }[] = [];
 
         for (const level of levels) {
           const detailAtLevel: Record<string, string> = {};
+
           for (const feature of level.features) {
             const res = await fetch(`https://www.dnd5eapi.co${feature.url}`);
             const data = await res.json();
-            detailAtLevel[feature.name] = data.desc?.join("\n\n") || "No description available.";
+            const description = data.desc?.join("\n\n") || "No description available.";
+            detailAtLevel[feature.name] = description;
+
+            if (feature.name.toLowerCase().includes("ability score improvement")) {
+              bonusList.push({ level: level.level, description });
+            }
           }
+
           detailsMap[level.level] = detailAtLevel;
         }
 
         setFeatureDetails(detailsMap);
+        setFormData((prev) => ({ ...prev, classAbilityBonuses: bonusList }));
       });
 
-      fetch(`https://www.dnd5eapi.co/api/2014/classes/${slug}`)
+    fetch(`https://www.dnd5eapi.co/api/2014/classes/${slug}`)
       .then((res) => res.json())
       .then((data) => {
         const choice = data.proficiency_choices?.[0];
