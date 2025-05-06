@@ -1,13 +1,6 @@
 import React from "react";
-
-interface BasicsStepProps {
-  formData: {
-    name: string;
-    alignment: string;
-    [key: string]: unknown;
-  };
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
-}
+import { CharacterInput } from "../../../types/character";
+import { CharacterStepProps } from "../../../types/character";
 
 const alignments = [
   "Lawful Good", "Neutral Good", "Chaotic Good",
@@ -15,9 +8,9 @@ const alignments = [
   "Lawful Evil", "Neutral Evil", "Chaotic Evil"
 ];
 
-const BasicsStep: React.FC<BasicsStepProps> = ({ formData, setFormData }) => {
+const BasicsStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
   const handleAlignmentSelect = (alignment: string) => {
-    setFormData((prev: any) => ({ ...prev, alignment }));
+    setFormData((prev: CharacterInput) => ({ ...prev, alignment }));
   };
 
   return (
@@ -28,7 +21,7 @@ const BasicsStep: React.FC<BasicsStepProps> = ({ formData, setFormData }) => {
         <input
           type="text"
           value={formData.name}
-          onChange={(e) => setFormData((prev: any) => ({ ...prev, name: e.target.value }))}
+          onChange={(e) => setFormData((prev: CharacterInput) => ({ ...prev, name: e.target.value }))}
           className="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
           placeholder="Enter name..."
         />

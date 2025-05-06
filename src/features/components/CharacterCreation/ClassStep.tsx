@@ -3,18 +3,7 @@ import ClassSelector from "./ClassStep/ClassSelector";
 import LevelSelector from "./ClassStep/LevelSelector";
 import ProficiencyPicker from "./ClassStep/ProficiencyPicker";
 import LevelAccordion from "./ClassStep/LevelAccordion";
-import { CharacterInput } from "../../../types/character";
-
-interface ClassStepProps {
-  formData: {
-    class: string;
-    level: number;
-    proficiencies?: string[];
-    subclass?: string;
-    classAbilityBonuses?: { level: number; description: string }[];
-  };
-  setFormData: React.Dispatch<React.SetStateAction<CharacterInput>>;
-}
+import { CharacterStepProps } from "../../../types/character";
 
 interface Feature {
   name: string;
@@ -33,7 +22,7 @@ interface ProficiencyOption {
   };
 }
 
-const ClassStep: React.FC<ClassStepProps> = ({ formData, setFormData }) => {
+const ClassStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
   const [classList, setClassList] = useState<string[]>([]);
   const [levelData, setLevelData] = useState<ClassLevel[]>([]);
   const [featureDetails, setFeatureDetails] = useState<Record<number, Record<string, string>>>({});
@@ -144,14 +133,19 @@ const ClassStep: React.FC<ClassStepProps> = ({ formData, setFormData }) => {
 
       {formData.class && levelData.length > 0 && (
         <LevelAccordion
-          levelData={levelData}
-          featureDetails={featureDetails}
-          formData={formData}
-          expanded={expanded}
-          handleToggle={handleToggle}
-          setFormData={setFormData}
-          subclassLevel={subclassLevel}
-        />
+        levelData={levelData}
+        featureDetails={featureDetails}
+        formData={{
+          level: formData.level ?? 1,
+          class: formData.class ?? "",
+          subclass: formData.subclass ?? undefined,
+        }}
+        expanded={expanded}
+        handleToggle={handleToggle}
+        setFormData={setFormData}
+        subclassLevel={subclassLevel}
+      />
+      
       )}
     </div>
   );

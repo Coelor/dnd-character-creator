@@ -1,5 +1,6 @@
 import React from "react";
 import SubclassSelector from "./SubclassSelector";
+import { CharacterInput } from "../../../../types/character";
 
 interface Feature {
   name: string;
@@ -21,7 +22,7 @@ interface LevelAccordionProps {
   };
   expanded: number | null;
   handleToggle: (lvl: number) => void;
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  setFormData: React.Dispatch<React.SetStateAction<CharacterInput>>;
   subclassLevel: number | null;
 }
 
@@ -67,7 +68,10 @@ const LevelAccordion: React.FC<LevelAccordionProps> = ({
                   level={formData.level}
                   selected={formData.subclass || ""}
                   setSelected={(val) =>
-                    setFormData((prev) => ({ ...prev, subclass: val }))
+                    setFormData((prev: CharacterInput) => ({
+                      ...prev,
+                      subclass: val,
+                    }))
                   }
                 />
               )}

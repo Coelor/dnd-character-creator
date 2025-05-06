@@ -3,14 +3,14 @@ export type Ability = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
 // Shared shape
 interface BaseCharacter {
     id?: string | null;
-    name?: string | "";
+    name?: string;
     level?: number | 1;
-    alignment?: string | "";
-    race?: string | "";
+    alignment: string;
+    race: string;
     subrace?: string | "";
-    class?: string | "";
+    class: string;
     subclass?: string | "";
-    background?: string | "";
+    background: string;
 
     raceBonuses?: Record<Ability, number> | Record<string, number>;
     classAbilityBonuses?: { level: number; description: string }[];
@@ -39,3 +39,8 @@ export type CharacterInput = BaseCharacter;
 export interface RawCharacter extends BaseCharacter {
     owner?: string | null;
 }
+
+export type CharacterStepProps = {
+    formData: CharacterInput;
+    setFormData: React.Dispatch<React.SetStateAction<CharacterInput>>;
+};
