@@ -4,10 +4,12 @@ import { RawCharacter } from "../../types/character";
 
 export const fetchCharacters = async (): Promise<RawCharacter[]> => {
   const { username } = await getCurrentUser();
+  console.log("Logged in username:", username);
+  const ownerId = `${username}::${username}`;
 
   const result = await client.models.Character.list({
     filter: {
-      owner: { eq: username },
+      owner: { eq: ownerId }, // ✅ filter with full owner ID
     },
   });
 
@@ -38,6 +40,5 @@ export const fetchCharacters = async (): Promise<RawCharacter[]> => {
         flaws: [],
       },
     };
-    
   });
 };

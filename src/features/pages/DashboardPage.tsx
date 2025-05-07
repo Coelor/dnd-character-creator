@@ -10,6 +10,10 @@ const DashboardPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log("Characters fetched:", characters);
+  }, [characters]);
+
+  useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
@@ -32,7 +36,7 @@ const DashboardPage: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    };
+    };    
 
     load();
   }, []);
