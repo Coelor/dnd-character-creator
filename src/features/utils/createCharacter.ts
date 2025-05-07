@@ -5,6 +5,7 @@ import { CharacterInput } from "../../types/character";
 export const saveCharacter = async (characterData: CharacterInput) => {
   try {
     const { username } = await getCurrentUser();
+    console.log("Created with logged in user:", username);
 
     // Remove 'id' if it's null to avoid type error
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
