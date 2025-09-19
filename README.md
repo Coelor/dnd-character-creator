@@ -1,136 +1,117 @@
-# DnD Character & Campaign Manager
+# D&D Character Creator
 
-*Based on AWS Amplify React+Vite Starter Template: a starter template for React+Vite apps with Amplify integration.*
+A modern web application for creating and managing D&D 5e characters with a guided, multi-step creation process.
 
----
+## Overview
 
-## 📝 Overview
+This application provides a comprehensive character creation experience for D&D 5e, featuring secure user authentication, real-time data persistence, and an intuitive dashboard for character management.
 
-This application provides a guided, multi-step character creation experience for D\&D 5e, persisting data in DynamoDB via AWS AppSync (GraphQL) and leveraging AWS Amplify for development velocity. It includes:
+**Key Technologies:**
+* **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, React Router
+* **Backend**: Supabase (PostgreSQL + Auth + Real-time)
+* **Hosting**: Deployment-flexible (Vercel, Netlify, etc.)
 
-* **Authentication**: Secure user sign-up and login with Amazon Cognito
-* **API**: GraphQL endpoint powered by AWS AppSync
-* **Database**: JSON-backed persistence in Amazon DynamoDB
+**User Features:**
+* Secure user authentication and account management
+* Step-by-step character creation wizard
+* Character data persistence with user isolation
+* Responsive dashboard for character management
 
-Users can:
-
-* Sign up / log in via Cognito
-* Create characters through a wizard (Basics → Race → Class → Abilities → Background → Review)
-* Save, update, and fetch characters (with JSON fields stored as AWSJSON) **In Progress**
-* View saved characters on a responsive Dashboard **In Progress**
-
----
-
-## 🚀 Features
+## Features
 
 ### Implemented
 
-* **Authentication**: Amplify & Cognito user flows (sign-up, login, password reset)
-* **GraphQL API**: CRUD operations using AppSync and DynamoDB
-* **Multi‑step Form**:
-
+* **Authentication**: Supabase Auth with email/password authentication
+* **Database**: PostgreSQL with Row Level Security for data isolation
+* **Multi-step Character Creation**:
   * Basics (name, alignment, HP, AC, initiative)
   * Race selection with ability bonuses
-  * Class selection (core classes)
+  * Class selection with subclass options
   * Abilities entry (Randomizer | Standard Array | Manual)
-  * Backgrounds with trait picker (personality, ideals, bonds, flaws)
+  * Background selection with trait picker (personality, ideals, bonds, flaws)
   * Review & Save
-* **Data Serialization**: JSON.stringify on all AWSJSON fields (`baseAbilities`, `raceBonuses`, `classAbilityBonuses`, etc.)
+* **Data Management**: JSON fields for complex D&D data structures with snake_case naming
 
-### On the Backburner
+### Planned Features
 
-* Campaign & session management
-* Printable character sheet export (PDF)
-* Collaboration & sharing features
+* Custom races and classes management
+* Campaign and session management
+* Character sheet PDF export
+* Real-time collaboration features
 * Custom avatar uploads
-* Automated level‑up ability improvements
-* Unit & integration tests (Jest, React Testing Library)
-* Fetch & display character cards (image, name, level, stats) on Dashboard
+* Automated level-up mechanics
+* Comprehensive testing suite
 
----
+## Tech Stack
 
-## 🧰 Tech Stack
+* **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, React Router, Redux Toolkit
+* **Backend**: Supabase (PostgreSQL, Auth, Real-time)
+* **Security**: Row Level Security, JWT authentication
+* **Deployment**: Framework-agnostic, can deploy anywhere
 
-* **Frontend**: React, Vite, TypeScript, Tailwind CSS, React Router
-* **Backend**: AWS Amplify, AWS AppSync (GraphQL), DynamoDB, Lambda, API Gateway
-* **Auth**: Amazon Cognito
-* **Hosting**: AWS Amplify Console
-
----
-
-## ⚙️ Setup & Installation
+## Setup & Installation
 
 ### Prerequisites
 
-* Node.js (>=14)
-* AWS CLI & Amplify CLI configured
+* Node.js (>=18)
+* Supabase account
 
 ### Local Development
 
 ```bash
-# Clone
+# Clone the repository
 git clone <repo-url>
-cd <project-directory>
+cd dnd-character-creator
 
-# Install
+# Install dependencies
 npm install
 
-# Pull backend
-amplify pull --appId <AMPLIFY_APP_ID> --envName dev
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Supabase credentials
 
-# Run
-npm start
+# Start development server
+npm run dev
 ```
 
-Open your browser at `http://localhost:3000`.
+Open your browser at `http://localhost:5173`.
 
----
+### Environment Variables
 
-## 🛠️ Amplify Sandbox
+Create a `.env` file with your Supabase credentials:
 
-Use the Amplify Sandbox plugin to spin up an isolated backend & frontend environment for testing:
-
-```bash
-npx ampx sandbox
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-This single command will:
+## Database Setup
 
-1. Create (or switch to) a `sandbox` environment in Amplify
-2. Deploy all configured backend resources (Cognito, AppSync, DynamoDB, etc.)
-3. Deploy the frontend to that sandbox
+The application requires a Supabase project with the following database schema. Run the SQL commands in your Supabase SQL Editor to set up the required tables and security policies.
 
-Once you’re done experimenting, you can tear down the sandbox with:
+See `docs/ARCHITECTURE.md` for detailed database schema information.
 
-```bash
-npx ampx sandbox delete
-```
+## Available Scripts
 
----
+* `npm run dev` - Start development server
+* `npm run build` - Build for production
+* `npm run preview` - Preview production build
+* `npm run lint` - Run ESLint
 
-## 📦 Production Deployment
+## Documentation
 
-For full deployment and CI/CD setup, follow the Amplify docs:
-[Deploy a fullstack app to AWS](https://docs.amplify.aws/react/start/quickstart/#deploy-a-fullstack-app-to-aws)
+For detailed technical documentation, see the `docs/` folder:
 
----
+* **[Architecture](docs/ARCHITECTURE.md)** - Technical architecture and system design
+* **[TODO](docs/TODO.md)** - Project roadmap and task tracking
 
-## 🔒 Security
+## Security
 
-Please review [CONTRIBUTING.md](CONTRIBUTING.md#security-issue-notifications) for reporting vulnerabilities and security best practices.
+* All user data is protected by Row Level Security policies
+* Environment variables protect sensitive configuration
+* No sensitive data is exposed in client-side code
+* Comprehensive .gitignore prevents credential leaks
 
----
-
-## 🤝 Contributing
-
-1. Fork the repo
-2. Create a branch (`git checkout -b feature/YourFeature`)
-3. Commit (`git commit -m "feat: add feature"`)
-4. Push (`git push origin feature/YourFeature`)
-5. Open a PR
-
----
-
-## 📜 License
+## License
 
 Licensed under the MIT License. See [LICENSE](LICENSE).
