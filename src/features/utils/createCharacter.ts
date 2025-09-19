@@ -1,21 +1,27 @@
-import { client } from "../../../amplify/data/client";
-import { getCurrentUser } from "aws-amplify/auth";
+import { supabase } from "../../lib/supabase";
 import { CharacterInput } from "../../types/character";
 
 export const saveCharacter = async (characterData: CharacterInput) => {
   try {
-    const { username } = await getCurrentUser();
-    console.log("Created with logged in user:", username);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    console.log("Created with logged in user:", user.id);
 
     // Remove 'id' if it's null to avoid type error
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...rest } = characterData;
-    const result = await client.models.Character.create({
-      ...rest,
-      owner: username,
-    });
+    const { id: _id, ...rest } = characterData;
 
-    return result.data;
+    const { data, error } = await supabase
+      .from('characters')
+      .insert({
+        ...rest,
+        user_id: user.id,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   } catch (error) {
     console.error("Failed to save character:", error);
     throw error;

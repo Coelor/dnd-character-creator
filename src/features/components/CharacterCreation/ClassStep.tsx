@@ -75,7 +75,7 @@ const ClassStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
         }
 
         setFeatureDetails(detailsMap);
-        setFormData((prev) => ({ ...prev, classAbilityBonuses: bonusList }));
+        setFormData((prev) => ({ ...prev, class_ability_bonuses: bonusList }));
       });
 
     fetch(`https://www.dnd5eapi.co/api/2014/classes/${slug}`)

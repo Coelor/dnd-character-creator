@@ -6,7 +6,7 @@ type Ability = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
 interface AbilitiesStepProps {
     formData: Pick<
         CharacterInput,
-        "raceBonuses" | "classAbilityBonuses" | "baseAbilities"
+        "race_bonuses" | "class_ability_bonuses" | "base_abilities"
     >;
     setFormData: React.Dispatch<React.SetStateAction<CharacterInput>>;
 }
@@ -29,8 +29,8 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({
     const [mode, setMode] = useState<"manual" | "array-random" | "array-manual">(
         "manual"
     );
-    const [baseAbilities, setBaseAbilities] = useState<Record<Ability, number>>(
-        formData.baseAbilities || defaultAbilities
+    const [base_abilities, setBaseAbilities] = useState<Record<Ability, number>>(
+        formData.base_abilities || defaultAbilities
     );
 
     const abilities: Ability[] = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
@@ -38,9 +38,9 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({
     useEffect(() => {
         setFormData((prev: CharacterInput) => ({
             ...prev,
-            baseAbilities,
+            base_abilities,
         }));
-    }, [baseAbilities, setFormData]);
+    }, [base_abilities, setFormData]);
 
     const handleRandomize = () => {
         const roll = () => {
@@ -62,7 +62,7 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({
         setBaseAbilities(rolled);
     };
 
-    const raceBonuses: Record<Ability, number> = formData.raceBonuses || {
+    const race_bonuses: Record<Ability, number> = formData.race_bonuses || {
         STR: 0, DEX: 0, CON: 0, INT: 0, WIS: 0, CHA: 0
     };
 
@@ -85,7 +85,7 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({
             charisma: "CHA",
         };
 
-        formData.classAbilityBonuses?.forEach(({ description }) => {
+        formData.class_ability_bonuses?.forEach(({ description }) => {
             const lower = description.toLowerCase();
             for (const [word, abbr] of Object.entries(keywords)) {
                 const matchCount = lower.split(word).length - 1;
@@ -106,7 +106,7 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({
                     <button
                         onClick={() => {
                             setMode("manual");
-                            setBaseAbilities(formData.baseAbilities || defaultAbilities);
+                            setBaseAbilities(formData.base_abilities || defaultAbilities);
                         }}
                         className={`px-4 py-1 rounded text-sm font-medium border ${mode === "manual"
                             ? "bg-yellow-300 text-black"
@@ -158,8 +158,8 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({
                 </thead>
                 <tbody>
                     {abilities.map((ability) => {
-                        const base = baseAbilities[ability] || 0;
-                        const race = raceBonuses[ability] || 0;
+                        const base = base_abilities[ability] || 0;
+                        const race = race_bonuses[ability] || 0;
                         const cls = classBonuses[ability] || 0;
                         const total = base + race + cls;
 
@@ -194,7 +194,7 @@ const AbilitiesStep: React.FC<AbilitiesStepProps> = ({
                                         >
                                             <option value="">--</option>
                                             {standardArray.map((val) => {
-                                                const isUsed = Object.entries(baseAbilities).some(
+                                                const isUsed = Object.entries(base_abilities).some(
                                                     ([key, assigned]) =>
                                                         key !== ability && assigned === val
                                                 );

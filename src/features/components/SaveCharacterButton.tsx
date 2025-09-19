@@ -1,5 +1,6 @@
 import React from "react";
-import { client } from "../../../amplify/data/client";
+import { saveCharacter } from "../utils/createCharacter";
+import { updateCharacter } from "../utils/updateCharacter";
 import { CharacterInput } from "../../types/character";
 
 interface SaveCharacterButtonProps {
@@ -8,9 +9,6 @@ interface SaveCharacterButtonProps {
   onSaved?: () => void;
 }
 
-const stringifyJson = (value: unknown) =>
-  typeof value === "undefined" ? null : JSON.stringify(value);
-
 const SaveCharacterButton: React.FC<SaveCharacterButtonProps> = ({
   formData,
   editing = false,
@@ -18,25 +16,11 @@ const SaveCharacterButton: React.FC<SaveCharacterButtonProps> = ({
 }) => {
   const handleSave = async () => {
     try {
-      // Remove `id` for create, or separate it for update
-      const { id, ...payload } = formData;
-
-      // Build one “clean” object where every JSON field is stringified
-      const clean: Record<string, unknown> = {
-        ...payload,
-        baseAbilities: stringifyJson(payload.baseAbilities),
-        raceBonuses: stringifyJson(payload.raceBonuses),
-        classAbilityBonuses: stringifyJson(payload.classAbilityBonuses),
-        extraLanguages: stringifyJson(payload.extraLanguages),
-        selectedTraits: stringifyJson(payload.selectedTraits),
-        proficiencies: stringifyJson(payload.proficiencies),
-      };
-
-      if (editing && id) {
-        await client.models.Character.update({ id, ...clean });
+      if (editing && formData.id) {
+        await updateCharacter(formData.id, formData);
         alert("Character updated successfully!");
       } else {
-        await client.models.Character.create(clean);
+        await saveCharacter(formData);
         alert("Character saved successfully!");
       }
 

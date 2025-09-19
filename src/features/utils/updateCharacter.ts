@@ -1,9 +1,13 @@
-import { client } from "../../../amplify/data/client";
+import { supabase } from "../../lib/supabase";
 
-export const updateCharacter = async (id: string, updatedData: Partial<Parameters<typeof client.models.Character.update>[0]>) => {
-  const result = await client.models.Character.update({
-    id,
-    ...updatedData,
-  });
-  return result.data;
+export const updateCharacter = async (id: string, updatedData: any) => {
+  const { data, error } = await supabase
+    .from('characters')
+    .update(updatedData)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 };

@@ -5,14 +5,14 @@ type Ability = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
 
 const ReviewStep: React.FC<CharacterStepProps> = ({ formData }) => {
   const {
-    baseAbilities = {} as Record<Ability, number>,
-    raceBonuses = {} as Record<Ability, number>,
+    base_abilities = {} as Record<Ability, number>,
+    race_bonuses = {} as Record<Ability, number>,
   } = formData;
 
   const abilities: Ability[] = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
 
   const getTotal = (ability: Ability) => {
-    return (baseAbilities[ability] || 0) + (raceBonuses[ability] || 0);
+    return (base_abilities[ability] || 0) + (race_bonuses[ability] || 0);
   };
 
   const displayList = (items?: string[]) =>
@@ -55,8 +55,8 @@ const ReviewStep: React.FC<CharacterStepProps> = ({ formData }) => {
             {abilities.map((ability) => (
               <tr key={ability} className="border-t border-gray-700">
                 <td className="px-2 py-1">{ability}</td>
-                <td className="px-2 py-1 text-center">{baseAbilities[ability] ?? "-"}</td>
-                <td className="px-2 py-1 text-center text-yellow-300">{raceBonuses[ability] ?? 0}</td>
+                <td className="px-2 py-1 text-center">{base_abilities[ability] ?? "-"}</td>
+                <td className="px-2 py-1 text-center text-yellow-300">{race_bonuses[ability] ?? 0}</td>
                 <td className="px-2 py-1 text-center font-semibold">{getTotal(ability)}</td>
               </tr>
             ))}
@@ -77,7 +77,7 @@ const ReviewStep: React.FC<CharacterStepProps> = ({ formData }) => {
       {/* Languages */}
       <div>
         <h2 className="text-lg font-semibold text-yellow-300 mb-2">Languages</h2>
-        {displayList(formData.extraLanguages ?? undefined)}
+        {displayList(formData.extra_languages ?? undefined)}
         </div>
 
       {/* Background Traits */}
@@ -86,17 +86,17 @@ const ReviewStep: React.FC<CharacterStepProps> = ({ formData }) => {
         {["personality_traits", "ideals", "bonds", "flaws"].map((key) => (
           <div key={key}>
             <h3 className="text-white font-medium capitalize">{key.replace(/_/g, " ")}</h3>
-            {displayList(formData.selectedTraits?.[key as keyof typeof formData.selectedTraits])}
+            {displayList(formData.selected_traits?.[key as keyof typeof formData.selected_traits])}
           </div>
         ))}
       </div>
 
       {/* Class Ability Bonuses */}
-      {formData.classAbilityBonuses && formData.classAbilityBonuses.length > 0 && (
+      {formData.class_ability_bonuses && formData.class_ability_bonuses.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-yellow-300 mb-2">Class Ability Score Increases</h2>
           <ul className="list-disc list-inside text-gray-300">
-            {formData.classAbilityBonuses.map((bonus, i) => (
+            {formData.class_ability_bonuses.map((bonus, i) => (
               <li key={i}>
                 Level {bonus.level}: {bonus.description}
               </li>

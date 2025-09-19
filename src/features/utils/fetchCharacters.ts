@@ -1,44 +1,51 @@
-import { client } from "../../../amplify/data/client";
-import { getCurrentUser } from "aws-amplify/auth";
+import { supabase } from "../../lib/supabase";
 import { RawCharacter } from "../../types/character";
 
 export const fetchCharacters = async (): Promise<RawCharacter[]> => {
-  const { username } = await getCurrentUser();
-  console.log("Logged in username:", username);
-  const ownerId = `${username}::${username}`;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('User not authenticated');
 
-  const result = await client.models.Character.list({
-    filter: {
-      owner: { eq: ownerId }, // ✅ filter with full owner ID
-    },
-  });
+  console.log("Logged in user:", user.id);
 
-  return (result.data ?? []).map((char) => {
-    const c = char as Partial<RawCharacter>;
+  const { data, error } = await supabase
+    .from('characters')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
 
+  if (error) throw error;
+
+  return (data ?? []).map((char) => {
     return {
-      name: c.name ?? "Unknown",
-      race: c.race ?? "Unknown",
-      class: c.class ?? "Unknown",
-      background: c.background ?? "None",
-      alignment: c.alignment ?? "Neutral",
-      level: c.level ?? 1,
-      hp: c.hp ?? "0/0",
-      ac: c.ac ?? 10,
-      init: c.init ?? 0,
-      img: c.img ?? "/default-avatar.png",
-      owner: c.owner ?? "unknown",
-      updatedAt: c.updatedAt ?? new Date().toISOString(),
-      proficiencies: c.proficiencies ?? [],
-      baseAbilities: c.baseAbilities ?? {},
-      raceBonuses: c.raceBonuses ?? {},
-      classAbilityBonuses: c.classAbilityBonuses ?? [],
-      selectedTraits: c.selectedTraits ?? {
+      id: char.id,
+      name: char.name ?? "Unknown",
+      race: char.race ?? "Unknown",
+      class: char.class ?? "Unknown",
+      background: char.background ?? "None",
+      alignment: char.alignment ?? "Neutral",
+      level: char.level ?? 1,
+      experience_points: char.experience_points ?? 0,
+      hp: char.hp ?? "0/0",
+      ac: char.ac ?? 10,
+      init: char.init ?? 0,
+      img: char.img ?? "/default-avatar.png",
+      owner: char.user_id ?? "unknown",
+      updated_at: char.updated_at ?? new Date().toISOString(),
+      created_at: char.created_at ?? new Date().toISOString(),
+      proficiencies: char.proficiencies ?? [],
+      base_abilities: char.base_abilities ?? {},
+      race_bonuses: char.race_bonuses ?? {},
+      class_ability_bonuses: char.class_ability_bonuses ?? [],
+      selected_traits: char.selected_traits ?? {
         personality_traits: [],
         ideals: [],
         bonds: [],
         flaws: [],
       },
+      subrace: char.subrace,
+      subclass: char.subclass,
+      extra_languages: char.extra_languages ?? [],
+      user_id: char.user_id,
     };
   });
 };

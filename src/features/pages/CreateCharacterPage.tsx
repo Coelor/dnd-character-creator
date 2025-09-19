@@ -31,7 +31,7 @@ const CreateCharacterPage: React.FC = () => {
     subclass: "",
     alignment: "",
     background: "",
-    raceBonuses: {
+    race_bonuses: {
       STR: 0,
       DEX: 0,
       CON: 0,
@@ -39,8 +39,8 @@ const CreateCharacterPage: React.FC = () => {
       WIS: 0,
       CHA: 0,
     },
-    classAbilityBonuses: [],
-    baseAbilities: {
+    class_ability_bonuses: [],
+    base_abilities: {
       STR: 8,
       DEX: 8,
       CON: 8,
@@ -48,8 +48,8 @@ const CreateCharacterPage: React.FC = () => {
       WIS: 8,
       CHA: 8,
     },
-    extraLanguages: [],
-    selectedTraits: {
+    extra_languages: [],
+    selected_traits: {
       personality_traits: [],
       ideals: [],
       bonds: [],
