@@ -53,3 +53,6 @@ config/secrets.*
 *.tmp
 *.temp
 .cache/
+
+# Claude
+.claude/
