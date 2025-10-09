@@ -47,7 +47,7 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
   const [backgroundDetails, setBackgroundDetails] = useState<BackgroundDetails | null>(null);
   const [expandedFeature, setExpandedFeature] = useState(false);
 
-  const selectedTraits = formData.selectedTraits ?? {
+  const selected_traits = formData.selected_traits ?? {
     personality_traits: [],
     ideals: [],
     bonds: [],
@@ -60,11 +60,11 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
   ) => {
     setFormData((prev) => ({
       ...prev,
-      selectedTraits: {
-        personality_traits: prev.selectedTraits?.personality_traits || [],
-        ideals: prev.selectedTraits?.ideals || [],
-        bonds: prev.selectedTraits?.bonds || [],
-        flaws: prev.selectedTraits?.flaws || [],
+      selected_traits: {
+        personality_traits: prev.selected_traits?.personality_traits || [],
+        ideals: prev.selected_traits?.ideals || [],
+        bonds: prev.selected_traits?.bonds || [],
+        flaws: prev.selected_traits?.flaws || [],
         [key]: values,
       },
     }));
@@ -83,8 +83,8 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
       setBackgroundDetails(null);
       setFormData((prev) => ({
         ...prev,
-        extraLanguages: [],
-        selectedTraits: {
+        extra_languages: [],
+        selected_traits: {
           personality_traits: [],
           ideals: [],
           bonds: [],
@@ -110,8 +110,8 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
             setFormData((prev) => ({
               ...prev,
               background: e.target.value,
-              extraLanguages: [],
-              selectedTraits: {
+              extra_languages: [],
+              selected_traits: {
                 personality_traits: [],
                 ideals: [],
                 bonds: [],
@@ -152,34 +152,34 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
       <TraitSelector
         title="Personality Traits"
         group={backgroundDetails?.personality_traits}
-        selected={selectedTraits.personality_traits}
+        selected={selected_traits.personality_traits}
         setSelected={(val) => updateTraits("personality_traits", val)}
       />
       <TraitSelector
         title="Ideals"
         group={backgroundDetails?.ideals}
-        selected={selectedTraits.ideals}
+        selected={selected_traits.ideals}
         setSelected={(val) => updateTraits("ideals", val)}
       />
       <TraitSelector
         title="Bonds"
         group={backgroundDetails?.bonds}
-        selected={selectedTraits.bonds}
+        selected={selected_traits.bonds}
         setSelected={(val) => updateTraits("bonds", val)}
       />
       <TraitSelector
         title="Flaws"
         group={backgroundDetails?.flaws}
-        selected={selectedTraits.flaws}
+        selected={selected_traits.flaws}
         setSelected={(val) => updateTraits("flaws", val)}
       />
 
       {/* Language Selector */}
       {formData.background && (
         <LanguageSelector
-          selectedLanguages={formData.extraLanguages || []}
+          selectedLanguages={formData.extra_languages || []}
           setSelectedLanguages={(langs) =>
-            setFormData((prev) => ({ ...prev, extraLanguages: langs }))
+            setFormData((prev) => ({ ...prev, extra_languages: langs }))
           }
           max={2}
         />

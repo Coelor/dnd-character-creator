@@ -52,7 +52,7 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
   useEffect(() => {
     if (!formData.race) {
       setRaceDetails(null);
-      setFormData((prev) => ({ ...prev, subrace: "", raceBonuses: {} }));
+      setFormData((prev) => ({ ...prev, subrace: "", race_bonuses: {} }));
       return;
     }
 
@@ -91,7 +91,7 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
     applyBonuses(raceDetails?.ability_bonuses);
     applyBonuses(subraceDetails?.ability_bonuses);
 
-    setFormData((prev) => ({ ...prev, raceBonuses: bonuses }));
+    setFormData((prev) => ({ ...prev, race_bonuses: bonuses }));
   }, [raceDetails, subraceDetails, setFormData]);
 
   return (

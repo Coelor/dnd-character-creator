@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-// import { CognitoUser } from "../../types/auth";
-import { AuthUser } from "aws-amplify/auth";
+import { User } from "@supabase/supabase-js";
 
 export const PALETTE = {
     gradientFrom: "var(--gradient-from)",
@@ -16,7 +15,7 @@ export const PALETTE = {
 };
 
 interface DashboardLayoutProps {
-    user: AuthUser;
+    user: User;
     signOut: () => void;
     children: React.ReactNode;
   }
@@ -49,7 +48,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         className="font-medium text-sm"
                         style={{ color: PALETTE.textPrimary }}
                     >
-                        {user?.signInDetails?.loginId}
+                        {user?.email}
                     </span>
                 </div>
 
