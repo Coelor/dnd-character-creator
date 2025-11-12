@@ -38,9 +38,10 @@ const LevelAccordion: React.FC<LevelAccordionProps> = ({
   return (
     <div className="space-y-3">
       {levelData.slice(0, formData.level).map((lvl) => (
-        <div key={lvl.level} className="rounded border border-gray-600 bg-gray-800">
+        <div key={lvl.level} className="rounded-lg border border-(--color-border) bg-(--color-surface)">
           <button
-            className="w-full flex justify-between items-center px-4 py-2 text-left text-sm font-semibold text-yellow-300"
+            className="w-full flex justify-between items-center px-4 py-2 text-left text-sm font-semibold hover:bg-(--color-surface-hover) transition-colors"
+            style={{ color: 'var(--color-accent)' }}
             onClick={() => handleToggle(lvl.level)}
           >
             <span>Level {lvl.level}</span>
@@ -48,18 +49,18 @@ const LevelAccordion: React.FC<LevelAccordionProps> = ({
           </button>
 
           {expanded === lvl.level && (
-            <div className="px-4 py-2 space-y-3 text-white text-sm">
+            <div className="px-4 py-2 space-y-3 text-sm" style={{ color: 'var(--color-text)' }}>
               {lvl.features.length > 0 ? (
                 lvl.features.map((f, i) => (
                   <div key={i} className="space-y-1">
                     <div className="font-semibold">• {f.name}</div>
-                    <div className="text-gray-300 whitespace-pre-line">
+                    <div className="whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>
                       {featureDetails?.[lvl.level]?.[f.name] || "Loading..."}
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-gray-400">No features listed</div>
+                <div style={{ color: 'var(--color-text-muted)' }}>No features listed</div>
               )}
 
               {subclassLevel !== null && subclassLevel === lvl.level && (

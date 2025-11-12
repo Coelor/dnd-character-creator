@@ -14,12 +14,16 @@ interface AbilityBonusesProps {
 
 const AbilityBonuses: React.FC<AbilityBonusesProps> = ({ bonuses }) => {
   return (
-    <div>
-      <h3 className="text-yellow-300 font-semibold mb-1">Ability Bonuses</h3>
-      <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
+    <div className="space-y-2">
+      <ul className="list-disc list-inside text-sm space-y-1" style={{ color: 'var(--color-text-secondary)' }}>
         {bonuses.map((bonus, idx) => (
           <li key={idx}>
-            {bonus.ability_score.name}: +{bonus.bonus}
+            <span className="font-medium" style={{ color: 'var(--color-text)' }}>
+              {bonus.ability_score.name}:
+            </span>{' '}
+            <span className="font-semibold" style={{ color: 'var(--color-success)' }}>
+              +{bonus.bonus}
+            </span>
           </li>
         ))}
       </ul>

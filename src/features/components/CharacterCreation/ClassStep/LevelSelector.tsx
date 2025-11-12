@@ -4,7 +4,9 @@ import { CharacterInput } from "../../../../types/character";
 
 const LevelSelector: React.FC<CharacterStepProps> = ({ formData, setFormData }) => (
   <div>
-    <label className="block text-sm font-medium text-yellow-300 mb-1">Character Level</label>
+    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
+      Character Level
+    </label>
     <input
       type="number"
       min={1}
@@ -16,8 +18,11 @@ const LevelSelector: React.FC<CharacterStepProps> = ({ formData, setFormData }) 
           level: Number(e.target.value),
         }))
       }
-      className="w-24 px-3 py-2 rounded bg-gray-800 text-white border border-gray-600"
+      className="input-field w-24"
     />
+    <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+      Level 1-20
+    </p>
   </div>
 );
 
