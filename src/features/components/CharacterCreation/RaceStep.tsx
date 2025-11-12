@@ -110,14 +110,18 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
         />
       )}
 
-      {loading && <div className="text-sm text-gray-400">Loading race details...</div>}
+      {loading && (
+        <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+          Loading race details...
+        </div>
+      )}
 
       {(Array.isArray(raceDetails?.ability_bonuses) && raceDetails.ability_bonuses.length > 0) ||
       (Array.isArray(subraceDetails?.ability_bonuses) && subraceDetails.ability_bonuses.length > 0) ? (
         <div className="space-y-4">
           {Array.isArray(raceDetails?.ability_bonuses) && raceDetails.ability_bonuses.length > 0 && (
-            <div>
-              <h3 className="text-yellow-300 font-semibold border-b border-gray-700 pb-1">
+            <div className="p-4 rounded-lg bg-(--color-surface) border border-(--color-border)">
+              <h3 className="font-semibold mb-3" style={{ color: 'var(--color-accent)' }}>
                 Race Ability Bonuses
               </h3>
               <AbilityBonuses bonuses={raceDetails.ability_bonuses} />
@@ -125,8 +129,8 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
           )}
 
           {Array.isArray(subraceDetails?.ability_bonuses) && subraceDetails.ability_bonuses.length > 0 && (
-            <div>
-              <h3 className="text-purple-300 font-semibold border-b border-gray-700 pb-1">
+            <div className="p-4 rounded-lg bg-(--color-surface) border border-(--color-border)">
+              <h3 className="font-semibold mb-3" style={{ color: 'var(--color-info)' }}>
                 Subrace Ability Bonuses
               </h3>
               <AbilityBonuses bonuses={subraceDetails.ability_bonuses} />
@@ -136,9 +140,13 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
       ) : null}
 
       {Array.isArray(raceDetails?.desc) && raceDetails.desc.length > 0 && (
-        <div>
-          <h3 className="text-yellow-300 font-semibold">Description</h3>
-          <p className="text-gray-300 whitespace-pre-line">{raceDetails.desc.join("\n\n")}</p>
+        <div className="p-4 rounded-lg bg-(--color-surface) border border-(--color-border)">
+          <h3 className="font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
+            Description
+          </h3>
+          <p className="text-sm whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>
+            {raceDetails.desc.join("\n\n")}
+          </p>
         </div>
       )}
 
@@ -147,7 +155,7 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
         <div className="space-y-4">
           {Array.isArray(raceDetails?.traits) && raceDetails.traits.length > 0 && (
             <div>
-              <h3 className="text-yellow-300 font-semibold border-b border-gray-700 pb-1">
+              <h3 className="font-semibold mb-3" style={{ color: 'var(--color-text)' }}>
                 Race Traits
               </h3>
               <TraitAccordion traits={raceDetails.traits} />
@@ -156,7 +164,7 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
 
           {Array.isArray(subraceDetails?.traits) && subraceDetails.traits.length > 0 && (
             <div>
-              <h3 className="text-purple-300 font-semibold border-b border-gray-700 pb-1">
+              <h3 className="font-semibold mb-3" style={{ color: 'var(--color-text)' }}>
                 Subrace Traits
               </h3>
               <TraitAccordion traits={subraceDetails.traits} />
