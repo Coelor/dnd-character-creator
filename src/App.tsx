@@ -28,7 +28,7 @@ function AppContent() {
   }
 
   return (
-    <Router>
+    <Router basename={import.meta.env.VITE_BASE_PATH || '/'}>
       <div className="flex h-screen bg-(--color-bg)">
         <Sidebar user={user} signOut={signOut} />
         
