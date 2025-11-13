@@ -12,7 +12,9 @@ interface ProficiencyPickerProps {
 
 const ProficiencyPicker: React.FC<ProficiencyPickerProps> = ({ proficiencyChoices, selected, setSelected }) => (
   <div className="space-y-2">
-    <p className="text-sm text-yellow-300">{proficiencyChoices.desc}</p>
+    <p className="text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
+      {proficiencyChoices.desc}
+    </p>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       {proficiencyChoices.options.map((opt) => {
         const isSelected = selected.includes(opt.index);
@@ -21,9 +23,16 @@ const ProficiencyPicker: React.FC<ProficiencyPickerProps> = ({ proficiencyChoice
         return (
           <label
             key={opt.index}
-            className={`flex items-center space-x-2 px-3 py-2 rounded border 
-              ${isSelected ? "bg-purple-600 border-yellow-300 text-yellow-100" : "bg-gray-800 border-gray-600 text-white"}
+            className={`flex items-center space-x-2 px-3 py-2 rounded-lg border-2 transition-all
+              ${isSelected
+                ? "bg-(--color-accent) border-(--color-accent) text-white"
+                : "bg-(--color-bg) border-(--color-border) hover:border-(--color-accent)"}
               ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            style={
+              !isSelected && !disabled
+                ? { color: 'var(--color-text)' }
+                : undefined
+            }
           >
             <input
               type="checkbox"
@@ -34,8 +43,9 @@ const ProficiencyPicker: React.FC<ProficiencyPickerProps> = ({ proficiencyChoice
                   isSelected ? prev.filter((p) => p !== opt.index) : [...prev, opt.index]
                 );
               }}
+              className="accent-[var(--color-accent)]"
             />
-            <span>{opt.name}</span>
+            <span className="text-sm">{opt.name}</span>
           </label>
         );
       })}

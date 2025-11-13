@@ -29,7 +29,9 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 
   return (
     <div>
-      <h3 className="text-yellow-300 font-semibold mb-1">Choose up to {max} Additional Language(s)</h3>
+      <h3 className="font-semibold mb-3" style={{ color: 'var(--color-accent)' }}>
+        Choose up to {max} Additional Language(s)
+      </h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {languages.map((lang) => {
           const isSelected = selectedLanguages.includes(lang.index);
@@ -38,17 +40,23 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           return (
             <label
               key={lang.index}
-              className={`flex items-center space-x-2 px-3 py-1 rounded border text-sm ${
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg border-2 text-sm transition-all ${
                 isSelected
-                  ? "bg-purple-600 border-yellow-300 text-yellow-100"
-                  : "bg-gray-800 border-gray-600 text-white"
+                  ? "bg-(--color-accent) border-(--color-accent) text-white"
+                  : "bg-(--color-bg) border-(--color-border) hover:border-(--color-accent)"
               } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+              style={
+                !isSelected && !disabled
+                  ? { color: 'var(--color-text)' }
+                  : undefined
+              }
             >
               <input
                 type="checkbox"
                 checked={isSelected}
                 disabled={disabled}
                 onChange={() => toggleLanguage(lang.index)}
+                className="accent-[var(--color-accent)]"
               />
               <span>{lang.name}</span>
             </label>

@@ -63,24 +63,26 @@ const SubclassSelector: React.FC<SubclassSelectorProps> = ({
   
 
   if (loading) {
-    return <div className="text-sm text-gray-400">Loading subclasses...</div>;
+    return <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Loading subclasses...</div>;
   }
 
   if (error) {
-    return <div className="text-sm text-red-400">{error}</div>;
+    return <div className="text-sm" style={{ color: 'var(--color-error)' }}>{error}</div>;
   }
 
   if (subclasses.length === 0) {
-    return <div className="text-sm text-gray-400">No subclasses available for this class.</div>;
+    return <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>No subclasses available for this class.</div>;
   }
 
   return (
     <div className="mt-4 space-y-2">
-      <label className="block text-sm font-medium text-yellow-300">Choose a Subclass</label>
+      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
+        Choose a Subclass
+      </label>
       <select
         value={selected}
         onChange={(e) => setSelected(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600"
+        className="input-field"
       >
         <option value="">-- Select Subclass --</option>
         {subclasses.map((sub) => (
@@ -91,7 +93,7 @@ const SubclassSelector: React.FC<SubclassSelectorProps> = ({
       </select>
 
       {selected && (
-        <div className="text-sm text-gray-300 mt-2 whitespace-pre-line">
+        <div className="text-sm mt-2 whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>
           {subclasses.find((s) => s.index === selected)?.desc.join("\n\n")}
         </div>
       )}

@@ -1,5 +1,3 @@
-import React from "react";
-
 interface Subrace {
   index: string;
   name: string;
@@ -12,16 +10,18 @@ interface SubraceSelectorProps {
   onChange: (value: string) => void;
 }
 
-const SubraceSelector: React.FC<SubraceSelectorProps> = ({ subraces, value, onChange }) => {
+const SubraceSelector = ({ subraces, value, onChange }: SubraceSelectorProps) => {
   if (subraces.length === 0) return null;
 
   return (
     <div>
-      <label className="block text-sm font-medium text-yellow-300 mb-1">Select Subrace</label>
+      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
+        Select Subrace
+      </label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600"
+        className="input-field"
       >
         <option value="">-- Choose Subrace --</option>
         {subraces.map((subrace) => (
@@ -30,6 +30,9 @@ const SubraceSelector: React.FC<SubraceSelectorProps> = ({ subraces, value, onCh
           </option>
         ))}
       </select>
+      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        Subraces provide additional bonuses and features
+      </p>
     </div>
   );
 };

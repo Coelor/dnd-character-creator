@@ -103,7 +103,9 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
     <div className="space-y-6">
       {/* Background Dropdown */}
       <div>
-        <label className="block text-sm font-medium text-yellow-300 mb-1">Select Background</label>
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
+          Select Background
+        </label>
         <select
           value={formData.background ?? ""}
           onChange={(e) =>
@@ -119,7 +121,7 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
               },
             }))
           }
-          className="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600"
+          className="input-field"
         >
           <option value="">-- Choose Background --</option>
           {backgroundList.map((bg) => (
@@ -128,20 +130,24 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
             </option>
           ))}
         </select>
+        <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+          Your background provides proficiencies, languages, and personality traits
+        </p>
       </div>
 
       {/* Feature Accordion */}
       {backgroundDetails?.feature?.desc && backgroundDetails.feature.desc.length > 0 && (
-        <div className="border border-gray-600 rounded">
+        <div className="border border-(--color-border) rounded-lg overflow-hidden">
           <button
             onClick={() => setExpandedFeature(!expandedFeature)}
-            className="w-full px-4 py-2 text-left text-sm font-semibold text-yellow-300 flex justify-between items-center"
+            className="w-full px-4 py-3 text-left font-semibold flex justify-between items-center bg-(--color-surface) hover:bg-(--color-surface-hover) transition-colors"
+            style={{ color: 'var(--color-text)' }}
           >
             <span>{backgroundDetails.feature.name}</span>
             <span>{expandedFeature ? "▾" : "▸"}</span>
           </button>
           {expandedFeature && (
-            <div className="px-4 py-2 text-sm text-gray-300 whitespace-pre-line">
+            <div className="px-4 py-3 text-sm whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>
               {backgroundDetails.feature.desc.join("\n\n")}
             </div>
           )}

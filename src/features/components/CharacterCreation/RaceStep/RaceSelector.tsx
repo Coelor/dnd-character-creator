@@ -1,5 +1,3 @@
-import React from "react";
-
 interface RaceOption {
   index: string;
   name: string;
@@ -11,16 +9,16 @@ interface RaceSelectorProps {
   raceList: RaceOption[];
 }
 
-const RaceSelector: React.FC<RaceSelectorProps> = ({ value, onChange, raceList }) => {
+const RaceSelector = ({ value, onChange, raceList }: RaceSelectorProps) => {
   return (
     <div>
-      <label className="block text-sm font-medium text-yellow-300 mb-1">
+      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
         Select Race
       </label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600"
+        className="input-field"
       >
         <option value="">-- Choose Race --</option>
         {raceList.map((race) => (
@@ -29,6 +27,9 @@ const RaceSelector: React.FC<RaceSelectorProps> = ({ value, onChange, raceList }
           </option>
         ))}
       </select>
+      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        Your race determines ability bonuses and special traits
+      </p>
     </div>
   );
 };
