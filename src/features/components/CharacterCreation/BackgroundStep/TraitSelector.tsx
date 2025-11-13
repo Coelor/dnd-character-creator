@@ -45,10 +45,11 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({
   };
 
   return (
-    <div className="border border-gray-600 rounded">
+    <div className="border border-(--color-border) rounded-lg overflow-hidden">
       <button
         onClick={toggleExpanded}
-        className="w-full px-4 py-2 text-left text-sm font-semibold text-yellow-300 flex justify-between items-center"
+        className="w-full px-4 py-2 text-left text-sm font-semibold flex justify-between items-center bg-(--color-surface) hover:bg-(--color-surface-hover) transition-colors"
+        style={{ color: 'var(--color-accent)' }}
       >
         <span>
           {title} (Choose {group.choose})
@@ -57,20 +58,26 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({
       </button>
 
       {expanded && (
-        <div className="px-4 py-2 text-sm text-gray-300 space-y-2">
+        <div className="px-4 py-2 text-sm space-y-2">
           {group.from.options.map((opt, i) => {
             const desc = opt.string || opt.desc || "[Missing description]";
             const isSelected = selected.includes(desc);
+            const disabled = !isSelected && selected.length >= group.choose;
 
             return (
               <div
                 key={i}
-                onClick={() => handleSelect(desc)}
-                className={`cursor-pointer p-2 rounded border ${
+                onClick={() => !disabled && handleSelect(desc)}
+                className={`p-3 rounded-lg border-2 transition-all ${
                   isSelected
-                    ? "bg-yellow-300 text-black border-yellow-400"
-                    : "bg-gray-700 text-white border-gray-600"
-                }`}
+                    ? "bg-(--color-accent-light) border-(--color-accent)"
+                    : "bg-(--color-bg) border-(--color-border) hover:border-(--color-accent)"
+                } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                style={
+                  isSelected
+                    ? { color: 'var(--color-accent)' }
+                    : { color: 'var(--color-text)' }
+                }
               >
                 {desc}
               </div>
