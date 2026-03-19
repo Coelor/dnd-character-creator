@@ -1,69 +1,113 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import RaceSelector from "./RaceStep/RaceSelector";
 import SubraceSelector from "./RaceStep/SubraceSelector";
 import AbilityBonuses from "./RaceStep/AbilityBonuses";
 import TraitAccordion from "./RaceStep/TraitAccordion";
 import { CharacterStepProps } from "../../../types/character";
+import {
+  getRaceDetails,
+  getRaces,
+  getSubraceDetails,
+  getSubracesByRace,
+} from "../../../lib/dndData";
 
-interface RaceSummary {
+interface RaceOption {
   index: string;
   name: string;
-  url: string;
 }
 
 interface AbilityBonus {
-  ability_score: {
-    index: string;
-    name: string;
-  };
+  ability: string;
+  ability_name: string;
   bonus: number;
 }
 
 interface Trait {
   name: string;
-  url: string;
+  description: string;
 }
 
 interface RaceDetails {
+  index: string;
   name: string;
+  description: string[] | null;
   ability_bonuses: AbilityBonus[];
-  desc?: string[];
   traits: Trait[];
-  subraces: { index: string; name: string; url: string }[];
 }
 
 interface SubraceDetails {
+  index: string;
+  race_index: string;
   ability_bonuses: AbilityBonus[];
   traits: Trait[];
 }
 
 const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
-  const [raceList, setRaceList] = useState<RaceSummary[]>([]);
+  const [raceList, setRaceList] = useState<RaceOption[]>([]);
+  const [subraceList, setSubraceList] = useState<RaceOption[]>([]);
   const [raceDetails, setRaceDetails] = useState<RaceDetails | null>(null);
   const [subraceDetails, setSubraceDetails] = useState<SubraceDetails | null>(null);
   const [loading, setLoading] = useState(false);
+  const previousRaceRef = useRef<string | undefined>(formData.race);
 
   useEffect(() => {
-    fetch("https://www.dnd5eapi.co/api/2014/races")
-      .then((res) => res.json())
-      .then((data) => setRaceList(data.results));
+    const loadRaces = async () => {
+      const races = await getRaces();
+      setRaceList(races);
+    };
+
+    void loadRaces();
   }, []);
 
   useEffect(() => {
+    const previousRace = previousRaceRef.current;
+    const raceActuallyChanged = previousRace !== formData.race;
+    previousRaceRef.current = formData.race;
+
     if (!formData.race) {
       setRaceDetails(null);
+      setSubraceList([]);
+      setSubraceDetails(null);
       setFormData((prev) => ({ ...prev, subrace: "", race_bonuses: {} }));
       return;
     }
 
+    // Only clear subrace when race actually changes, not on remount
+    if (raceActuallyChanged) {
+      setSubraceDetails(null);
+      setFormData((prev) => ({ ...prev, subrace: "" }));
+    }
+
     setLoading(true);
-    fetch(`https://www.dnd5eapi.co/api/2014/races/${formData.race}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setRaceDetails(data);
-        setLoading(false);
-      });
-  }, [formData.race, setFormData]);
+    const loadRaceDetails = async () => {
+      const [race, subraces] = await Promise.all([
+        getRaceDetails(formData.race),
+        getSubracesByRace(formData.race),
+      ]);
+
+      setRaceDetails(race as RaceDetails | null);
+      setSubraceList(subraces);
+
+      // After loading subraces, validate the current subrace selection
+      // Keep it if valid, clear it if incompatible with the new race
+      if (formData.subrace && subraces.length > 0) {
+        const isValidSubrace = subraces.some((sr) => sr.index === formData.subrace);
+        if (!isValidSubrace) {
+          setFormData((prev) => ({ ...prev, subrace: "" }));
+          setSubraceDetails(null);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    void loadRaceDetails().catch(() => {
+      setRaceDetails(null);
+      setSubraceList([]);
+      setSubraceDetails(null);
+      setLoading(false);
+    });
+  }, [formData.race, formData.subrace, setFormData]);
 
   useEffect(() => {
     if (!formData.subrace || !formData.race) {
@@ -71,19 +115,33 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
       return;
     }
 
-    fetch(`https://www.dnd5eapi.co/api/2014/subraces/${formData.subrace}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setSubraceDetails(data);
-      });
-  }, [formData.subrace, formData.race]);
+    // Skip loading if subrace list hasn't loaded yet or subrace is invalid
+    // (validation and clearing is handled in the race loading effect)
+    if (subraceList.length > 0) {
+      const isValidSubrace = subraceList.some((sr) => sr.index === formData.subrace);
+      if (!isValidSubrace) {
+        setSubraceDetails(null);
+        return;
+      }
+    }
+
+    const subraceIndex = formData.subrace;
+
+    const loadSubraceDetails = async () => {
+      const details = await getSubraceDetails(subraceIndex);
+      setSubraceDetails(details as SubraceDetails | null);
+    };
+
+    void loadSubraceDetails().catch(() => {
+      setSubraceDetails(null);
+    });
+  }, [formData.subrace, formData.race, subraceList]);
 
   useEffect(() => {
     const bonuses: Record<string, number> = {};
 
     const applyBonuses = (list: AbilityBonus[] = []) => {
-      list.forEach(({ ability_score, bonus }) => {
-        const ability = ability_score.index.toUpperCase();
+      list.forEach(({ ability, bonus }) => {
         bonuses[ability] = (bonuses[ability] || 0) + bonus;
       });
     };
@@ -102,9 +160,9 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
         raceList={raceList}
       />
 
-      {Array.isArray(raceDetails?.subraces) && raceDetails.subraces.length > 0 && (
+      {subraceList.length > 0 && (
         <SubraceSelector
-          subraces={raceDetails.subraces}
+          subraces={subraceList}
           value={formData.subrace || ""}
           onChange={(val) => setFormData((prev) => ({ ...prev, subrace: val }))}
         />
@@ -139,13 +197,13 @@ const RaceStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
         </div>
       ) : null}
 
-      {Array.isArray(raceDetails?.desc) && raceDetails.desc.length > 0 && (
+      {Array.isArray(raceDetails?.description) && raceDetails.description.length > 0 && (
         <div className="p-4 rounded-lg bg-(--color-surface) border border-(--color-border)">
           <h3 className="font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
             Description
           </h3>
           <p className="text-sm whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>
-            {raceDetails.desc.join("\n\n")}
+            {raceDetails.description.join("\n\n")}
           </p>
         </div>
       )}

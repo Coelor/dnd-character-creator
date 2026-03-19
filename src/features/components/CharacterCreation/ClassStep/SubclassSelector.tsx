@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getSubclassesByClass } from "../../../../lib/dndData";
 
 interface SubclassSelectorProps {
   className: string;
@@ -9,7 +10,7 @@ interface SubclassSelectorProps {
 
 interface Subclass {
   name: string;
-  desc: string[];
+  description: string[] | null;
   index: string;
 }
 
@@ -23,43 +24,35 @@ const SubclassSelector: React.FC<SubclassSelectorProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!className) return;
-  
+    if (!className) {
+      setSubclasses([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
-    const slug = className.toLowerCase();
-  
-    fetch(`https://www.dnd5eapi.co/api/2014/classes/${slug}`)
-      .then((res) => res.json())
-      .then(async (data) => {
-        const subclassList = data.subclasses || [];
-  
-        if (!subclassList.length) {
-          setSubclasses([]);
-          setLoading(false);
-          return;
+
+    const loadSubclasses = async () => {
+      const results = await getSubclassesByClass(className);
+      setSubclasses(results);
+
+      // Clear subclass if current selection is not in the new list
+      if (selected && results.length > 0) {
+        const isValidSubclass = results.some((sub) => sub.index === selected);
+        if (!isValidSubclass) {
+          setSelected("");
         }
-  
-        const results: Subclass[] = [];
-  
-        for (const entry of subclassList) {
-          const res = await fetch(`https://www.dnd5eapi.co${entry.url}`);
-          const full = await res.json();
-          results.push({
-            name: full.name,
-            desc: full.desc,
-            index: full.index,
-          });
-        }
-  
-        setSubclasses(results);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load subclasses.");
-        setLoading(false);
-      });
-  }, [className]);
+      }
+
+      setLoading(false);
+    };
+
+    void loadSubclasses().catch(() => {
+      setError("Failed to load subclasses.");
+      setLoading(false);
+    });
+  }, [className, selected, setSelected]);
   
 
   if (loading) {
@@ -94,7 +87,7 @@ const SubclassSelector: React.FC<SubclassSelectorProps> = ({
 
       {selected && (
         <div className="text-sm mt-2 whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>
-          {subclasses.find((s) => s.index === selected)?.desc.join("\n\n")}
+          {subclasses.find((s) => s.index === selected)?.description?.join("\n\n")}
         </div>
       )}
     </div>

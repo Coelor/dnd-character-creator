@@ -4,10 +4,11 @@ import LevelSelector from "./ClassStep/LevelSelector";
 import ProficiencyPicker from "./ClassStep/ProficiencyPicker";
 import LevelAccordion from "./ClassStep/LevelAccordion";
 import { CharacterStepProps } from "../../../types/character";
+import { getClassDetails, getClasses, getClassLevels } from "../../../lib/dndData";
 
 interface Feature {
   name: string;
-  url: string;
+  description: string;
 }
 
 interface ClassLevel {
@@ -15,15 +16,13 @@ interface ClassLevel {
   features: Feature[];
 }
 
-interface ProficiencyOption {
-  item: {
-    name: string;
-    index: string;
-  };
+interface ClassOption {
+  index: string;
+  name: string;
 }
 
 const ClassStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
-  const [classList, setClassList] = useState<string[]>([]);
+  const [classList, setClassList] = useState<ClassOption[]>([]);
   const [levelData, setLevelData] = useState<ClassLevel[]>([]);
   const [featureDetails, setFeatureDetails] = useState<Record<number, Record<string, string>>>({});
   const [expanded, setExpanded] = useState<number | null>(null);
@@ -36,71 +35,70 @@ const ClassStep: React.FC<CharacterStepProps> = ({ formData, setFormData }) => {
   const [subclassLevel, setSubclassLevel] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("https://www.dnd5eapi.co/api/classes")
-      .then((res) => res.json())
-      .then((data) => setClassList(data.results.map((cls: { name: string }) => cls.name)));
+    const loadClasses = async () => {
+      const classes = await getClasses();
+      setClassList(classes);
+    };
+
+    void loadClasses();
   }, []);
 
   useEffect(() => {
     if (!formData.class) {
+      setLevelData([]);
+      setFeatureDetails({});
       setProficiencyChoices(null);
       setSubclassLevel(null);
       return;
     }
 
-    const slug = formData.class.toLowerCase();
+    const classIndex = formData.class;
 
-    fetch(`https://www.dnd5eapi.co/api/classes/${slug}/levels`)
-      .then((res) => res.json())
-      .then(async (levels) => {
-        setLevelData(levels);
-        const detailsMap: Record<number, Record<string, string>> = {};
-        const bonusList: { level: number; description: string }[] = [];
+    const loadClassData = async () => {
+      const [levels, classDetails] = await Promise.all([
+        getClassLevels(classIndex),
+        getClassDetails(classIndex),
+      ]);
 
-        for (const level of levels) {
-          const detailAtLevel: Record<string, string> = {};
+      const mappedLevels: ClassLevel[] = levels.map((level) => ({
+        level: level.level,
+        features: Array.isArray(level.features) ? level.features : [],
+      }));
 
-          for (const feature of level.features) {
-            const res = await fetch(`https://www.dnd5eapi.co${feature.url}`);
-            const data = await res.json();
-            const description = data.desc?.join("\n\n") || "No description available.";
-            detailAtLevel[feature.name] = description;
+      setLevelData(mappedLevels);
 
-            if (feature.name.toLowerCase().includes("ability score improvement")) {
-              bonusList.push({ level: level.level, description });
-            }
+      const detailsMap: Record<number, Record<string, string>> = {};
+      const bonusList: { level: number; description: string }[] = [];
+
+      for (const level of mappedLevels) {
+        const detailAtLevel: Record<string, string> = {};
+
+        for (const feature of level.features) {
+          const description = feature.description || "No description available.";
+          detailAtLevel[feature.name] = description;
+
+          if (feature.name.toLowerCase().includes("ability score improvement")) {
+            bonusList.push({ level: level.level, description });
           }
-
-          detailsMap[level.level] = detailAtLevel;
         }
 
-        setFeatureDetails(detailsMap);
-        setFormData((prev) => ({ ...prev, class_ability_bonuses: bonusList }));
-      });
+        detailsMap[level.level] = detailAtLevel;
+      }
 
-    fetch(`https://www.dnd5eapi.co/api/2014/classes/${slug}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const choice = data.proficiency_choices?.[0];
-        if (choice && choice.from?.options) {
-          setProficiencyChoices({
-            desc: choice.desc,
-            choose: choice.choose,
-            options: choice.from.options.map((opt: ProficiencyOption) => ({
-              name: opt.item.name,
-              index: opt.item.index,
-            })),
-          });
-        } else {
-          setProficiencyChoices(null);
-        }
+      setFeatureDetails(detailsMap);
+      setFormData((prev) => ({ ...prev, class_ability_bonuses: bonusList }));
 
-        if (data.subclass_level) {
-          setSubclassLevel(data.subclass_level);
-        } else {
-          setSubclassLevel(null);
-        }
-      });
+      setProficiencyChoices(classDetails?.proficiency_choices ?? null);
+      setSubclassLevel(classDetails?.subclass_level ?? null);
+    };
+
+    void loadClassData().catch(() => {
+      setLevelData([]);
+      setFeatureDetails({});
+      setProficiencyChoices(null);
+      setSubclassLevel(null);
+      setFormData((prev) => ({ ...prev, class_ability_bonuses: [] }));
+    });
   }, [formData.class, setFormData]);
 
   useEffect(() => {

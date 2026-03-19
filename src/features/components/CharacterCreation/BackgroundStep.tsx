@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import LanguageSelector from "./BackgroundStep/LanguageSelector";
 import TraitSelector from "./BackgroundStep/TraitSelector";
 import { CharacterInput } from "../../../types/character";
+import { getBackgroundDetails, getBackgrounds } from "../../../lib/dndData";
 
 interface BackgroundStepProps {
   formData: CharacterInput;
@@ -11,7 +12,6 @@ interface BackgroundStepProps {
 interface BackgroundSummary {
   index: string;
   name: string;
-  url: string;
 }
 
 interface Feature {
@@ -19,18 +19,9 @@ interface Feature {
   desc: string[];
 }
 
-interface TraitOption {
-  option_type: string;
-  string?: string;
-  desc?: string;
-}
-
 interface TraitGroup {
   choose: number;
-  from: {
-    option_set_type: string;
-    options: TraitOption[];
-  };
+  options: string[];
 }
 
 interface BackgroundDetails {
@@ -73,9 +64,12 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
   
 
   useEffect(() => {
-    fetch("https://www.dnd5eapi.co/api/backgrounds")
-      .then((res) => res.json())
-      .then((data) => setBackgroundList(data.results));
+    const loadBackgrounds = async () => {
+      const backgrounds = await getBackgrounds();
+      setBackgroundList(backgrounds);
+    };
+
+    void loadBackgrounds();
   }, []);
 
   useEffect(() => {
@@ -94,9 +88,14 @@ const BackgroundStep: React.FC<BackgroundStepProps> = ({ formData, setFormData }
       return;
     }
 
-    fetch(`https://www.dnd5eapi.co/api/backgrounds/${formData.background}`)
-      .then((res) => res.json())
-      .then((data) => setBackgroundDetails(data));
+    const loadBackgroundDetails = async () => {
+      const details = await getBackgroundDetails(formData.background);
+      setBackgroundDetails(details as BackgroundDetails | null);
+    };
+
+    void loadBackgroundDetails().catch(() => {
+      setBackgroundDetails(null);
+    });
   }, [formData.background, setFormData]);
 
   return (

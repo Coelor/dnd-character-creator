@@ -4,7 +4,7 @@ import { CharacterInput } from "../../../../types/character";
 
 interface Feature {
   name: string;
-  url: string;
+  description: string;
 }
 
 interface ClassLevel {

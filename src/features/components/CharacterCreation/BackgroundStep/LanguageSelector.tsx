@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getLanguages } from "../../../../lib/dndData";
 
 interface LanguageSelectorProps {
   selectedLanguages: string[];
@@ -14,9 +15,12 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const [languages, setLanguages] = useState<{ index: string; name: string }[]>([]);
 
   useEffect(() => {
-    fetch("https://www.dnd5eapi.co/api/2014/languages")
-      .then((res) => res.json())
-      .then((data) => setLanguages(data.results));
+    const loadLanguages = async () => {
+      const languageList = await getLanguages();
+      setLanguages(languageList);
+    };
+
+    void loadLanguages();
   }, []);
 
   const toggleLanguage = (lang: string) => {

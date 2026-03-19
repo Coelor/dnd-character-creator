@@ -2,18 +2,9 @@
 
 import React, { useState } from "react";
 
-interface TraitOption {
-  option_type: string;
-  string?: string;
-  desc?: string;
-}
-
 interface TraitGroup {
   choose: number;
-  from: {
-    option_set_type: string;
-    options: TraitOption[];
-  };
+  options: string[];
 }
 
 interface TraitSelectorProps {
@@ -31,7 +22,7 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
 
-  if (!group || !group.from?.options || group.from.options.length === 0) return null;
+  if (!group || !group.options || group.options.length === 0) return null;
 
   const toggleExpanded = () => setExpanded(!expanded);
 
@@ -59,8 +50,7 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({
 
       {expanded && (
         <div className="px-4 py-2 text-sm space-y-2">
-          {group.from.options.map((opt, i) => {
-            const desc = opt.string || opt.desc || "[Missing description]";
+          {group.options.map((desc, i) => {
             const isSelected = selected.includes(desc);
             const disabled = !isSelected && selected.length >= group.choose;
 

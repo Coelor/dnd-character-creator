@@ -36,29 +36,98 @@ export interface Character {
   updated_at: string
 }
 
-export interface Race {
-  id: string
+export interface DndAbilityBonus {
+  ability: string
+  ability_name: string
+  bonus: number
+}
+
+export interface DndTrait {
   name: string
   description: string
-  ability_bonuses: any
-  traits: any
-  languages: string[]
-  proficiencies: any
-  created_by: string
-  is_official: boolean
-  created_at: string
+}
+
+export interface Race {
+  id: string
+  index: string
+  name: string
+  description: string[] | null
+  ability_bonuses: DndAbilityBonus[] | null
+  traits: DndTrait[] | null
 }
 
 export interface Class {
   id: string
+  index: string
   name: string
-  description: string
-  hit_die: number
-  primary_ability: string
-  saving_throws: string[]
-  skills: string[]
-  equipment: any
-  created_by: string
-  is_official: boolean
-  created_at: string
+  hit_die: number | null
+  subclass_level: number | null
+  proficiency_choices: {
+    desc: string
+    choose: number
+    options: Array<{
+      name: string
+      index: string
+    }>
+  } | null
+}
+
+export interface Subrace {
+  id: string
+  index: string
+  name: string
+  race_index: string
+  ability_bonuses: DndAbilityBonus[] | null
+  traits: DndTrait[] | null
+}
+
+export interface ClassLevel {
+  id: string
+  class_index: string
+  level: number
+  features: Array<{
+    name: string
+    description: string
+  }> | null
+}
+
+export interface Subclass {
+  id: string
+  index: string
+  name: string
+  class_index: string
+  description: string[] | null
+}
+
+export interface Background {
+  id: string
+  index: string
+  name: string
+  feature: {
+    name: string
+    desc: string[]
+  } | null
+  personality_traits: {
+    choose: number
+    options: string[]
+  } | null
+  ideals: {
+    choose: number
+    options: string[]
+  } | null
+  bonds: {
+    choose: number
+    options: string[]
+  } | null
+  flaws: {
+    choose: number
+    options: string[]
+  } | null
+}
+
+export interface Language {
+  id: string
+  index: string
+  name: string
+  type: string | null
 }

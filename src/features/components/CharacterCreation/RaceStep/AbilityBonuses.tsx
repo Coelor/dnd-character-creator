@@ -1,10 +1,8 @@
 import React from "react";
 
 interface AbilityBonus {
-  ability_score: {
-    index: string;
-    name: string;
-  };
+  ability: string;
+  ability_name: string;
   bonus: number;
 }
 
@@ -19,7 +17,7 @@ const AbilityBonuses: React.FC<AbilityBonusesProps> = ({ bonuses }) => {
         {bonuses.map((bonus, idx) => (
           <li key={idx}>
             <span className="font-medium" style={{ color: 'var(--color-text)' }}>
-              {bonus.ability_score.name}:
+              {bonus.ability_name}:
             </span>{' '}
             <span className="font-semibold" style={{ color: 'var(--color-success)' }}>
               +{bonus.bonus}
