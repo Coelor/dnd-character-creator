@@ -9,6 +9,7 @@ export const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -26,11 +27,12 @@ export const Auth = () => {
           setMessage(error.message);
         }
       } else {
-        const { error } = await signUp(email, password);
+        const { error } = await signUp(email, password, inviteCode);
         if (error) {
           setMessage(error.message);
         } else {
-          setMessage('Check your email for the confirmation link!');
+          setMessage('Account created successfully! You can now sign in.');
+          setIsLogin(true);
         }
       }
     } catch (error) {
@@ -75,6 +77,17 @@ export const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+
+              {!isLogin && (
+                <Input
+                  type="text"
+                  label="Invite Code"
+                  placeholder="Enter your invite code"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                  required
+                />
+              )}
 
               {message && (
                 <div

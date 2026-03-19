@@ -103,6 +103,7 @@ See `docs/ARCHITECTURE.md` for detailed database schema information.
 For detailed technical documentation, see the `docs/` folder:
 
 * **[Architecture](docs/ARCHITECTURE.md)** - Technical architecture and system design
+* **[Invite Codes](docs/INVITE_CODES.md)** - Invite code system setup and management
 * **[TODO](docs/TODO.md)** - Project roadmap and task tracking
 
 ## Security
